@@ -2,6 +2,9 @@
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
 #include "simple_logger.h"
+#include "../gfc/include/gfc_input.h"
+#include "Entity.h"
+#include "piper.h"
 
 int main(int argc, char * argv[])
 {
@@ -9,6 +12,9 @@ int main(int argc, char * argv[])
     int done = 0;
     const Uint8 * keys;
     Sprite *sprite;
+    //NEW
+    Entity *playerEntity;//make it pointer probs for all this shit
+    //NEW
     
     int mx,my;
     float mf = 0;
@@ -19,20 +25,24 @@ int main(int argc, char * argv[])
     init_logger("gf2d.log");
     slog("---==== BEGIN ====---");
     gf2d_graphics_initialize(
-        "gf2d",
+        "Super BeWitched!",
         1200,
         720,
-        1200,
-        720,
+        300,
+        240,
         vector4d(0,0,0,255),
         0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
+    entity_manager_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
+
+    playerEntity = piper_entity_new(vector2d(100, 100));
+
     /*main game loop*/
     while(!done)
     {
@@ -42,13 +52,14 @@ int main(int argc, char * argv[])
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
-        
+        entity_think_all();
+        entity_update_all();
         
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
             gf2d_sprite_draw_image(sprite,vector2d(0,0));
-            
+            entity_draw_all();
             //UI elements last
             gf2d_sprite_draw(
                 mouse,

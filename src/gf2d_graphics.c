@@ -90,11 +90,11 @@ void gf2d_graphics_initialize(
         gf2d_graphics_close();
         return;
     }
-    
+    //SDL_HINT_RENDER_SCALE_QUALITY = 0;
     SDL_SetRenderDrawColor(gf2d_graphics.renderer, 0, 0, 0, 255);
     SDL_RenderClear(gf2d_graphics.renderer);
     SDL_RenderPresent(gf2d_graphics.renderer);
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    SDL_SetHint(0, "linear");
     SDL_RenderSetLogicalSize(gf2d_graphics.renderer, renderWidth, renderHeight);
 
     gf2d_graphics.texture = SDL_CreateTexture(
