@@ -5,11 +5,14 @@
 #include "../gfc/include/gfc_input.h"
 #include "Entity.h"
 #include "piper.h"
+#include "TileMap.h"
+#include "camera.h"
 
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
     int done = 0;
+    TileMap *tileMap;
     const Uint8 * keys;
     Sprite *sprite;
     //NEW
@@ -28,8 +31,8 @@ int main(int argc, char * argv[])
         "Super BeWitched!",
         1200,
         720,
-        300,
-        240,
+        1200,
+        720,
         vector4d(0,0,0,255),
         0);
     gf2d_graphics_set_frame_delay(16);
@@ -38,6 +41,10 @@ int main(int argc, char * argv[])
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
+
+    tileMap = tileMap_load("config/test.tilemap");
+    tileMap_set_active_TileMap(tileMap);
+
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
 
@@ -60,6 +67,7 @@ int main(int argc, char * argv[])
             //backgrounds drawn first
             gf2d_sprite_draw_image(sprite,vector2d(0,0));
             entity_draw_all();
+            tileMap_draw(tileMap_get_active_TileMap());
             //UI elements last
             gf2d_sprite_draw(
                 mouse,
@@ -74,8 +82,10 @@ int main(int argc, char * argv[])
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
-        slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
+        //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
+    tileMap_free(tileMap);
+    entity_free(playerEntity);
     slog("---==== END ====---");
     return 0;
 }
