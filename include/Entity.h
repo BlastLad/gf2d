@@ -4,7 +4,7 @@
 #include "gfc_types.h"
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
-
+#include "gfc_shape.h"
 
 /**
 *@brief the structure of an entity
@@ -17,6 +17,9 @@ typedef struct Entity_S {
 	float startFrame;
 	float endFrame;
 
+	Shape shape;//the collision shape that will be used for colliders
+
+	Vector2D drawOffset;
 	Vector2D position;
 	Vector2D velocity;
 	Vector2D direction;
@@ -56,6 +59,10 @@ void entity_draw_all();
 //@brief update all active entities
 void entity_update_all();
 
+
+Shape entity_get_shape(Entity* ent);
+
+Shape entity_get_shape_after_move(Entity* ent);
 
 //@brief call all the think functions for the entities, if they have one
 void entity_think_all();

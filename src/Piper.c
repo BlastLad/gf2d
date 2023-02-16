@@ -17,7 +17,8 @@ Entity* piper_entity_new(Vector2D spawnPosition)
 		16,
 		4,
 		0);
-
+	ent->drawOffset = vector2d(8, 8);
+	ent->shape = gfc_shape_circle(0, 0, 5);
 	ent->think = piper_think;
 	vector2d_copy(ent->position, spawnPosition);
 	ent->speed = 4;

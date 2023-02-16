@@ -7,6 +7,7 @@
 #include "piper.h"
 #include "TileMap.h"
 #include "camera.h"
+//#include "../gfc/include/gfc_pak.h"
 
 int main(int argc, char * argv[])
 {
@@ -31,8 +32,8 @@ int main(int argc, char * argv[])
         "Super BeWitched!",
         1200,
         720,
-        300,
-        180,
+        664,
+        424,
         vector4d(0,0,0,255),
         0);
     gf2d_graphics_set_frame_delay(16);
@@ -66,8 +67,8 @@ int main(int argc, char * argv[])
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
             gf2d_sprite_draw_image(sprite,vector2d(0,0));
-            entity_draw_all();
             level_draw(level_get_active_level());
+            entity_draw_all();
             //UI elements last
             gf2d_sprite_draw(
                 mouse,

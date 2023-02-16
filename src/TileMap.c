@@ -13,6 +13,18 @@ void level_build(Level* level);
 
 static Level* activeLevel = NULL;
 
+typedef struct
+{
+    int graph_max;
+    TileInfo* graph;
+    
+}GraphManager;
+
+static GraphManager graph_manager;
+
+
+
+
 Level* level_get_active_level()
 {
     return activeLevel;
@@ -22,6 +34,18 @@ void level_set_active_level(Level* level)
 {
     activeLevel = level;
 }
+
+void graph_close()
+{
+    if (graph_manager.graph)
+    {
+        free(graph_manager.graph);
+    }
+    slog("graph system closed");
+    //entity_free_all();
+
+}
+
 
 Level* level_load(const char* filename)
 {
@@ -73,6 +97,7 @@ Level* level_load(const char* filename)
     level->mapSize.x = d;
     level->mapSize.y = c;
     level->tileMap = gfc_allocate_array(sizeof(int), c * d);
+    graph_manager.graph = gfc_allocate_array(sizeof(TileInfo), c * d);//NEW
     if (!level->tileMap)
     {
         slog("failed to allocate tileMap for level %s", filename);
@@ -80,6 +105,16 @@ Level* level_load(const char* filename)
         sj_free(json);
         return NULL;
     }
+
+    if (!graph_manager.graph) {
+        slog("failed to allocate graph for level %s", filename);
+        level_free(level);
+        sj_free(json);
+        graph_close();
+        return NULL;
+    }
+
+
     for (i = 0; i < c; i++)// i is row
     {
         row = sj_array_get_nth(list, i);
@@ -92,14 +127,51 @@ Level* level_load(const char* filename)
             tile = 0;//default
             sj_get_integer_value(item, &tile);
             level->tileMap[(i * (int)level->mapSize.x) + j] = tile;
+            tileInfo_new(i, j, tile, (int)level->mapSize.x);
+
         }
     }
+
+    for (i = 0; i < c; i++)// i is row
+    {
+        row = sj_array_get_nth(list, i);
+        if (!row)continue;
+        d = sj_array_get_count(row);
+        for (j = 0; j < d; j++)// j is column 
+        {
+            if (i > 0) {
+                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[0] = &graph_manager.graph[((i - 1) * (int)level->mapSize.x) + j];
+            }
+            if (i < c - 1) {
+                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[2] = &graph_manager.graph[((i + 1) * (int)level->mapSize.x) + j];
+            }
+            if (j > 0) {
+                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[1] = &graph_manager.graph[(i * (int)level->mapSize.x) + (j + 1)];
+            }
+            if (j < d - 1) {
+                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[3] = &graph_manager.graph[(i * (int)level->mapSize.x) + (j - 1)];
+            }
+        }
+    }
+
+
+
     sj_free(json);
     level_build(level);
     return level;
 }
 
-/*int level_shape_clip(Level* level, Shape shape)
+void tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize) {
+    graph_manager.graph[(xCoord * mapSize) + yCoord]._inuse = 1;
+    graph_manager.graph[(xCoord * mapSize) + yCoord].tileFrame = tileNum;
+    graph_manager.graph[(xCoord * mapSize) + yCoord].coordinates = vector2d(xCoord, yCoord);
+}
+
+
+
+
+
+int level_shape_clip(Level* level, Shape shape)
 {
     int i, c;
     Shape* clip;
@@ -112,25 +184,26 @@ Level* level_load(const char* filename)
         if (gfc_shape_overlap(*clip, shape))return 1;
     }
     return 0;
-}*/
+}
 
-/*void level_build_clip_space(Level* level)
+void level_build_clip_space(Level* level)
 {
     Shape* shape;
+    level->clips = gfc_list_new();
     int i, j;
     if (!level)return;
     for (j = 0; j < level->mapSize.y; j++)//j is row
     {
         for (i = 0; i < level->mapSize.x; i++)// i is column
         {
-            if (level->tileMap[(j * (int)level->mapSize.x) + i] <= 0)continue;//skip zero
+            if (level->tileMap[(j * (int)level->mapSize.x) + i] != 1)continue;//skip zero
             shape = gfc_allocate_array(sizeof(Shape), 1);
             if (!shape)continue;
             *shape = gfc_shape_rect(i * level->tileSize.x, j * level->tileSize.y, level->tileSize.x, level->tileSize.y);
             gfc_list_append(level->clips, shape);
         }
     }
-}*/
+}
 
 void level_build(Level* level)
 {
@@ -185,7 +258,7 @@ void level_build(Level* level)
     level->tileLayer->frame_h = level->tileLayer->surface->h;
     level->tileLayer->frames_per_line = 1;
     camera_set_world_size(vector2d(level->tileLayer->frame_w, level->tileLayer->frame_h));
-    //level_build_clip_space(level);
+    level_build_clip_space(level);
 }
 
 void level_draw(Level* level)
@@ -199,7 +272,7 @@ Level* level_new()
 {
     Level* level;
     level = gfc_allocate_array(sizeof(Level), 1);
-    //level->clips = gfc_list_new();
+   
     return level;
 }
 
@@ -209,8 +282,8 @@ void level_free(Level* level)
     if (level->tileSet)gf2d_sprite_free(level->tileSet);
     if (level->tileLayer)gf2d_sprite_free(level->tileLayer);
     if (level->tileMap)free(level->tileMap);
-   // gfc_list_foreach(level->clips, free);
-    //gfc_list_delete(level->clips);
+    gfc_list_foreach(level->clips, free);
+    gfc_list_delete(level->clips);
     free(level);
 }
 

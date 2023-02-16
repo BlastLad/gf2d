@@ -3,13 +3,17 @@
 
 #include "gfc_text.h"
 #include "gfc_shape.h"
-
 #include "gf2d_sprite.h"
+#include "gfc_vector.h"
 
-typedef struct
+
+typedef struct TileInfo
 {
-    int tileFrame;
     int solid;  // if true the tile cannot be walked through
+    Bool _inuse;
+    int tileFrame;   
+    Vector2D coordinates;
+    struct TileInfo *neighbours[4];//order is 0 is left 1 is up 2 is right and 3 is down
 }TileInfo;
 
 typedef struct
@@ -20,7 +24,7 @@ typedef struct
     Vector2D    mapSize;    //the width and height of the tile map
     int* tileMap;    //WTF???
     Sprite* tileLayer;  //TBD
-    //List* clips;      //list of static shapes to clip against in the game world
+    List *clips;      //list of static shapes to clip against in the game world
 }Level;
 
 /**
@@ -55,6 +59,10 @@ Level* level_load(const char* filename);
  * @param level the level to draw
  */
 void level_draw(Level* level);
+
+
+void tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize);
+
 
 /**
  * @brief allocate a blank level struct
