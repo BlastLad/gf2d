@@ -5,6 +5,7 @@
 #include "gfc_list.h"
 
 #include "gf2d_graphics.h"
+#include "gf2d_draw.h"
 
 #include "camera.h"
 #include "TileMap.h"
@@ -142,18 +143,24 @@ Level* level_load(const char* filename)
             if (i > 0) {
                 graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[0] = &graph_manager.graph[((i - 1) * (int)level->mapSize.x) + j];
             }
+
             if (i < c - 1) {
                 graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[2] = &graph_manager.graph[((i + 1) * (int)level->mapSize.x) + j];
             }
+
             if (j > 0) {
-                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[1] = &graph_manager.graph[(i * (int)level->mapSize.x) + (j + 1)];
+                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[1] = &graph_manager.graph[(i * (int)level->mapSize.x) + (j - 1)];
             }
+
             if (j < d - 1) {
-                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[3] = &graph_manager.graph[(i * (int)level->mapSize.x) + (j - 1)];
+                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[3] = &graph_manager.graph[(i * (int)level->mapSize.x) + (j + 1)];
             }
+
         }
     }
 
+    gf2d_draw_circle(vector2d((graph_manager.graph[(2 * (int)level->mapSize.x) + 2].coordinates.x * 32), graph_manager.graph[(2 * (int)level->mapSize.x) + 2].coordinates.y * 32), 5, gfc_color(255, 0, 0, 255));
+    
 
 
     sj_free(json);
@@ -266,6 +273,18 @@ void level_draw(Level* level)
     if (!level)return;
     if (!level->tileLayer)return;
     gf2d_sprite_draw_image(level->tileLayer, camera_get_draw_offset());
+    int i;
+    int x;
+    int y;
+    x = 0;
+    y = 0;
+    gf2d_draw_circle(vector2d((graph_manager.graph[(x * (int)level->mapSize.x) + y].coordinates.x * 32) + 16, (graph_manager.graph[(x * (int)level->mapSize.x) + y].coordinates.y * 32) + 16), 5, gfc_color(255, 0, 0, 255));
+    
+    for (int i = 0; i < 4; i++) {
+        if (graph_manager.graph[(x * (int)level->mapSize.x) + y].neighbours[i] != NULL) {
+            gf2d_draw_circle(vector2d((graph_manager.graph[(x * (int)level->mapSize.x) + y].neighbours[i]->coordinates.x * 32) + 16, (graph_manager.graph[(x * (int)level->mapSize.x) + y].neighbours[i]->coordinates.y * 32) + 16), 5, gfc_color(255, 0, 0, 255));
+        }
+    }
 }
 
 Level* level_new()
