@@ -17,11 +17,26 @@ static Level* activeLevel = NULL;
 typedef struct
 {
     int graph_max;
+    int graphSizeX;
+    int graphSizeY;
     TileInfo* graph;
     
 }GraphManager;
 
 static GraphManager graph_manager;
+
+TileInfo get_graph_node(int x, int y) {
+    
+    return graph_manager.graph[(y * (int)graph_manager.graphSizeX) + x];
+}
+
+Vector2D graph_to_world_pos(int x, int y)
+{
+    TileInfo tileToGet;
+    tileToGet = get_graph_node(x, y);
+    return vector2d(((tileToGet.coordinates.x * 32) + 16), ((tileToGet.coordinates.y * 32) + 16));
+
+}
 
 
 
@@ -97,8 +112,12 @@ Level* level_load(const char* filename)
     }
     level->mapSize.x = d;
     level->mapSize.y = c;
+    slog("%i", d);
+    slog("%i", c);
     level->tileMap = gfc_allocate_array(sizeof(int), c * d);
     graph_manager.graph = gfc_allocate_array(sizeof(TileInfo), c * d);//NEW
+    graph_manager.graphSizeX = d;
+    graph_manager.graphSizeY = c;
     if (!level->tileMap)
     {
         slog("failed to allocate tileMap for level %s", filename);
@@ -140,6 +159,7 @@ Level* level_load(const char* filename)
         d = sj_array_get_count(row);
         for (j = 0; j < d; j++)// j is column 
         {
+            
             if (i > 0) {
                 graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[0] = &graph_manager.graph[((i - 1) * (int)level->mapSize.x) + j];
             }
@@ -158,20 +178,16 @@ Level* level_load(const char* filename)
 
         }
     }
-
-    gf2d_draw_circle(vector2d((graph_manager.graph[(2 * (int)level->mapSize.x) + 2].coordinates.x * 32), graph_manager.graph[(2 * (int)level->mapSize.x) + 2].coordinates.y * 32), 5, gfc_color(255, 0, 0, 255));
     
-
-
     sj_free(json);
     level_build(level);
     return level;
 }
 
 void tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize) {
-    graph_manager.graph[(xCoord * mapSize) + yCoord]._inuse = 1;
-    graph_manager.graph[(xCoord * mapSize) + yCoord].tileFrame = tileNum;
-    graph_manager.graph[(xCoord * mapSize) + yCoord].coordinates = vector2d(xCoord, yCoord);
+    graph_manager.graph[(xCoord * (int)mapSize) + yCoord]._inuse = 1;
+    graph_manager.graph[(xCoord * (int)mapSize) + yCoord].tileFrame = tileNum;
+    graph_manager.graph[(xCoord * (int)mapSize) + yCoord].coordinates = vector2d(yCoord, xCoord);
 }
 
 
@@ -212,8 +228,14 @@ void level_build_clip_space(Level* level)
     }
 }
 
+static int x;
+static int y;
+
 void level_build(Level* level)
 {
+    x = 0;
+    y = 0;
+
     int i, j;
     if (!level)return;
     if (level->tileLayer)gf2d_sprite_free(level->tileLayer);
@@ -240,9 +262,9 @@ void level_build(Level* level)
         return;
     }
     //draw the tile sprite to the surface
-    for (j = 0; j < level->mapSize.y; j++)//j is row
+    for (j = 0; j < graph_manager.graphSizeY; j++)//j is row
     {
-        for (i = 0; i < level->mapSize.x; i++)// i is column
+        for (i = 0; i < graph_manager.graphSizeX; i++)// i is column
         {
             if (level->tileMap[(j * (int)level->mapSize.x) + i] <= 0)continue;//skip zero
             gf2d_sprite_draw_to_surface(
@@ -250,7 +272,7 @@ void level_build(Level* level)
                 vector2d(i * level->tileSize.x, j * level->tileSize.y),
                 NULL,
                 NULL,
-                level->tileMap[(j * (int)level->mapSize.x) + i] - 1,
+                get_graph_node(i, j).tileFrame - 1,
                 level->tileLayer->surface);
         }
     }
@@ -268,23 +290,52 @@ void level_build(Level* level)
     level_build_clip_space(level);
 }
 
+
+
+
+float frame = 0;
 void level_draw(Level* level)
 {
     if (!level)return;
     if (!level->tileLayer)return;
     gf2d_sprite_draw_image(level->tileLayer, camera_get_draw_offset());
     int i;
-    int x;
-    int y;
-    x = 0;
-    y = 0;
-    gf2d_draw_circle(vector2d((graph_manager.graph[(x * (int)level->mapSize.x) + y].coordinates.x * 32) + 16, (graph_manager.graph[(x * (int)level->mapSize.x) + y].coordinates.y * 32) + 16), 5, gfc_color(255, 0, 0, 255));
+
+ 
+  
+    gf2d_draw_circle(graph_to_world_pos(x, y), 5, gfc_color(255, 0, 0, 255));
     
     for (int i = 0; i < 4; i++) {
-        if (graph_manager.graph[(x * (int)level->mapSize.x) + y].neighbours[i] != NULL) {
-            gf2d_draw_circle(vector2d((graph_manager.graph[(x * (int)level->mapSize.x) + y].neighbours[i]->coordinates.x * 32) + 16, (graph_manager.graph[(x * (int)level->mapSize.x) + y].neighbours[i]->coordinates.y * 32) + 16), 5, gfc_color(255, 0, 0, 255));
+        if (get_graph_node(x, y).neighbours[i] != NULL) {
+            TileInfo *currentNeighbour;
+            currentNeighbour = get_graph_node(x, y).neighbours[i];
+            gf2d_draw_circle(graph_to_world_pos(currentNeighbour->coordinates.x, currentNeighbour->coordinates.y), 5, gfc_color(255, 0, 0, 255));
         }
     }
+    slog("%i", graph_manager.graphSizeX);
+    
+    frame += 0.1;
+    if (frame >= 2) {
+
+        frame = 0;
+        if (x < graph_manager.graphSizeX - 1) {
+            x++;
+        }
+        else {
+            x = 0;
+            y++;
+        }
+
+        if (y < graph_manager.graphSizeY) {
+
+        }
+        else {
+            y = 0;
+            x = 0;
+        }
+
+    }
+
 }
 
 Level* level_new()
