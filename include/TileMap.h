@@ -4,7 +4,7 @@
 #include "gfc_text.h"
 #include "gfc_shape.h"
 #include "gf2d_sprite.h"
-#include "gfc_vector.h"
+#include "Entity.h"
 
 
 typedef struct TileInfo
@@ -12,7 +12,8 @@ typedef struct TileInfo
     int solid;  // if true the tile cannot be walked through
     Bool _inuse;
     int tileFrame;   
-    Vector2D coordinates;
+    int coordinateX;
+    int coordinateY;
     struct TileInfo *neighbours[4];//order is 0 is left 1 is up 2 is right and 3 is down
 }TileInfo;
 
@@ -39,6 +40,8 @@ typedef struct
 GraphManager* get_graph();
 
 TileInfo get_graph_node(int x, int y);
+
+void get_next_carpet_tile(int x, int y, Entity* ent);
 
 Vector2D graph_to_world_pos(int x, int y);
 

@@ -5,7 +5,6 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
-#include "TileMap.h"
 
 /**
 *@brief the structure of an entity
@@ -26,8 +25,10 @@ typedef struct Entity_S {
 	Vector2D position;
 	Vector2D velocity;
 	Vector2D direction;
-	Vector2D currentGridPosition;
-	Vector2D targetGridPosition;
+	int currentGridPositionX;
+	int currentGridPositionY;
+	int targetGridPositionX;
+	int targetGridPositionY;
 
 	float speed;
 

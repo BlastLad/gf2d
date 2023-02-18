@@ -29,7 +29,7 @@ Vector2D graph_to_world_pos(int x, int y)
 {
     TileInfo tileToGet;
     tileToGet = get_graph_node(x, y);
-    return vector2d(((tileToGet.coordinates.x * 32) + 16), ((tileToGet.coordinates.y * 32) + 16));
+    return vector2d(((tileToGet.coordinateX * 32) + 16), ((tileToGet.coordinateY * 32) + 16));
 
 }
 
@@ -205,15 +205,13 @@ TileInfo *tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize) {
     if (graph_manager.graph[(xCoord * (int)mapSize) + yCoord]._inuse == 0) {
         graph_manager.graph[(xCoord * (int)mapSize) + yCoord]._inuse = 1;
         graph_manager.graph[(xCoord * (int)mapSize) + yCoord].tileFrame = tileNum;
-        graph_manager.graph[(xCoord * (int)mapSize) + yCoord].coordinates = vector2d(yCoord, xCoord);
+        graph_manager.graph[(xCoord * (int)mapSize) + yCoord].coordinateX = yCoord;
+        graph_manager.graph[(xCoord * (int)mapSize) + yCoord].coordinateY = xCoord;
         return &graph_manager.graph[(xCoord * (int)mapSize) + yCoord];
     }
     
     return NULL;
 }
-
-
-
 
 int level_shape_clip(Level* level, Shape shape)
 {
@@ -312,7 +310,25 @@ void level_build(Level* level)
 }
 
 
-
+void get_next_carpet_tile(int x, int y, Entity *ent) 
+{    
+    int j;
+    for (j = 0; j < 4; j++) 
+    {
+        slog("0 0");
+        if (get_graph_node(x, y).neighbours[j] != NULL) 
+        {
+            TileInfo* currentNeighbour;
+            currentNeighbour = get_graph_node(x, y).neighbours[j];
+            slog("how bout now");
+            if (currentNeighbour->tileFrame == 2) 
+            {
+                ent->targetGridPositionX = currentNeighbour->coordinateX;
+                ent->targetGridPositionY = currentNeighbour->coordinateY;
+            }
+        }
+    }
+}
 
 float frame = 0;
 void level_draw(Level* level)
@@ -326,11 +342,11 @@ void level_draw(Level* level)
   
     gf2d_draw_circle(graph_to_world_pos(x, y), 5, gfc_color(255, 0, 0, 255));
     
-    for (int i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++) {
         if (get_graph_node(x, y).neighbours[i] != NULL) {
             TileInfo *currentNeighbour;
             currentNeighbour = get_graph_node(x, y).neighbours[i];
-            gf2d_draw_circle(graph_to_world_pos(currentNeighbour->coordinates.x, currentNeighbour->coordinates.y), 5, gfc_color(255, 0, 0, 255));
+            gf2d_draw_circle(graph_to_world_pos(currentNeighbour->coordinateX, currentNeighbour->coordinateY), 5, gfc_color(255, 0, 0, 255));
         }
     }
     frame += 0.1;

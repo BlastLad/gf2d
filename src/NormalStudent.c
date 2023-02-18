@@ -18,10 +18,10 @@ Vector2D get_next_tile(int x, int y, int behaviourRule) {
 		}
 	}
 
-	return vector2d(get_graph_node(x, y).coordinates.x, get_graph_node(x,y).coordinates.y);
+	return vector2d(get_graph_node(x, y).coordinateX, get_graph_node(x,y).coordinateY);
 }
 
-Entity* normal_student_new(Vector2D position) 
+Entity* normal_student_new(Vector2D position, int gridX, int gridY) 
 {
 	Entity* ent;
 	ent = entity_new();
@@ -37,7 +37,11 @@ Entity* normal_student_new(Vector2D position)
 	ent->startFrame = 0;
 	vector2d_copy(ent->position, position);
 	ent->endFrame = 4;
-	ent->currentGridPosition = vector2d(position.x, position.y);
+	ent->currentGridPositionX = gridX;
+	ent->currentGridPositionY = gridY;
+	ent->targetGridPositionX = gridX;
+	ent->targetGridPositionY = gridY;
+	slog("h %i", ent->currentGridPositionX);
 	//ent->targetGridPosition = get_next_tile(position.x, position.y, 1);
 
 	//ent->targetGridPosition =  get_next_tile(position.x, position.y, 1);//ent->currentGridPosition->neighbours[1]; 
