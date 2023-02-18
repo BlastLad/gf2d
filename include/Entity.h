@@ -5,6 +5,7 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
+#include "TileMap.h"
 
 /**
 *@brief the structure of an entity
@@ -19,14 +20,20 @@ typedef struct Entity_S {
 
 	Shape shape;//the collision shape that will be used for colliders
 
+	int index;
+
 	Vector2D drawOffset;
 	Vector2D position;
 	Vector2D velocity;
 	Vector2D direction;
+	Vector2D currentGridPosition;
+	Vector2D targetGridPosition;
 
 	float speed;
 
 	void (*think)(struct Entity_S* self);
+	void (*update)(struct Entity_S* self);
+	void* data;//unique data
 
 }Entity;
 

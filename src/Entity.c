@@ -7,6 +7,7 @@ typedef struct
 {
 	Uint32 entity_max;
 	Entity *entity_list;
+	SJson* entity_def;
 }EntityManager;
 
 static EntityManager entity_manager = { 0 };
@@ -36,6 +37,7 @@ void entity_manager_init(Uint32 max)
 		return;
 	}
 	entity_manager.entity_max = max;
+	entity_manager.entity_def = sj_load("config/entities.def");
 	atexit(entity_manager_close);//like an on disable but for the whole prog
 	slog("entity system initialized");
 }

@@ -5,6 +5,7 @@
 #include "../gfc/include/gfc_input.h"
 #include "Entity.h"
 #include "piper.h"
+#include "NormalStudent.h"
 #include "TileMap.h"
 #include "camera.h"
 //#include "../gfc/include/gfc_pak.h"
@@ -13,11 +14,16 @@ int main(int argc, char * argv[])
 {
     /*variable declarations*/
     int done = 0;
+    int remainingStudents = 20;
     Level *tileMap;
     const Uint8 * keys;
     Sprite *sprite;
     //NEW
     Entity *playerEntity;//make it pointer probs for all this shit
+    List *Students;
+    Entity* normalStudent;
+
+
     //NEW
     
     int mx,my;
@@ -49,7 +55,9 @@ int main(int argc, char * argv[])
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
 
-    playerEntity = piper_entity_new(vector2d(100, 100));
+    playerEntity = piper_entity_new(graph_to_world_pos(8, 6));
+
+    Students = gfc_list_new();
 
     /*main game loop*/
     while(!done)
@@ -59,9 +67,21 @@ int main(int argc, char * argv[])
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
-        if (mf >= 16.0)mf = 0;
+       
+
+        if (mf >= 16.0) {
+
+            mf = 0;
+            if (remainingStudents > 0) {
+                normalStudent = normal_student_new(graph_to_world_pos(7, 2));
+                gfc_list_append(Students, normalStudent);
+                remainingStudents--;
+            }
+        }
+
         entity_think_all();
         entity_update_all();
+
         
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame

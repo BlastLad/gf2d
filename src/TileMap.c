@@ -14,19 +14,14 @@ void level_build(Level* level);
 
 static Level* activeLevel = NULL;
 
-typedef struct
-{
-    int graph_max;
-    int graphSizeX;
-    int graphSizeY;
-    TileInfo* graph;
-    
-}GraphManager;
-
 static GraphManager graph_manager;
 
-TileInfo get_graph_node(int x, int y) {
-    
+GraphManager* get_graph() {
+    return &graph_manager;
+}
+
+TileInfo get_graph_node(int x, int y) 
+{
     return graph_manager.graph[(y * (int)graph_manager.graphSizeX) + x];
 }
 
@@ -59,6 +54,24 @@ void graph_close()
     }
     slog("graph system closed");
     //entity_free_all();
+
+}
+
+void graph_manager_init(Uint32 max) 
+{
+    if (max <= 0)
+    {
+        slog("cannot inialize graph system: zero entities specified!");
+        return;
+    }
+    graph_manager.graph = gfc_allocate_array(sizeof(TileInfo), max);
+    if (!graph_manager.graph) {
+        slog("failed to initialize graph system!");
+        return;
+    }
+    graph_manager.graph_max = max;
+    atexit(graph_close);//like an on disable but for the whole prog
+    slog("graph system initialized");
 
 }
 
@@ -115,7 +128,7 @@ Level* level_load(const char* filename)
     slog("%i", d);
     slog("%i", c);
     level->tileMap = gfc_allocate_array(sizeof(int), c * d);
-    graph_manager.graph = gfc_allocate_array(sizeof(TileInfo), c * d);//NEW
+    graph_manager_init(c * d);
     graph_manager.graphSizeX = d;
     graph_manager.graphSizeY = c;
     if (!level->tileMap)
@@ -147,7 +160,11 @@ Level* level_load(const char* filename)
             tile = 0;//default
             sj_get_integer_value(item, &tile);
             level->tileMap[(i * (int)level->mapSize.x) + j] = tile;
-            tileInfo_new(i, j, tile, (int)level->mapSize.x);
+            TileInfo* tileTest;
+            tileTest = tileInfo_new(i, j, tile, (int)level->mapSize.x);
+            if (!tileTest) {
+                slog("failed to make a new tile at x %i y %i", j, i);
+            }
 
         }
     }
@@ -184,12 +201,16 @@ Level* level_load(const char* filename)
     return level;
 }
 
-void tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize) {
-    graph_manager.graph[(xCoord * (int)mapSize) + yCoord]._inuse = 1;
-    graph_manager.graph[(xCoord * (int)mapSize) + yCoord].tileFrame = tileNum;
-    graph_manager.graph[(xCoord * (int)mapSize) + yCoord].coordinates = vector2d(yCoord, xCoord);
+TileInfo *tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize) {
+    if (graph_manager.graph[(xCoord * (int)mapSize) + yCoord]._inuse == 0) {
+        graph_manager.graph[(xCoord * (int)mapSize) + yCoord]._inuse = 1;
+        graph_manager.graph[(xCoord * (int)mapSize) + yCoord].tileFrame = tileNum;
+        graph_manager.graph[(xCoord * (int)mapSize) + yCoord].coordinates = vector2d(yCoord, xCoord);
+        return &graph_manager.graph[(xCoord * (int)mapSize) + yCoord];
+    }
+    
+    return NULL;
 }
-
 
 
 
@@ -312,8 +333,6 @@ void level_draw(Level* level)
             gf2d_draw_circle(graph_to_world_pos(currentNeighbour->coordinates.x, currentNeighbour->coordinates.y), 5, gfc_color(255, 0, 0, 255));
         }
     }
-    slog("%i", graph_manager.graphSizeX);
-    
     frame += 0.1;
     if (frame >= 2) {
 
