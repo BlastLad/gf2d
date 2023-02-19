@@ -29,7 +29,7 @@ Vector2D graph_to_world_pos(int x, int y)
 {
     TileInfo tileToGet;
     tileToGet = get_graph_node(x, y);
-    return vector2d(((tileToGet.coordinateX * 32) + 16), ((tileToGet.coordinateY * 32) + 16));
+    return vector2d(((tileToGet.coordinates.x * 32) + 16), ((tileToGet.coordinates.y * 32) + 16));
 
 }
 
@@ -205,8 +205,8 @@ TileInfo *tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize) {
     if (graph_manager.graph[(xCoord * (int)mapSize) + yCoord]._inuse == 0) {
         graph_manager.graph[(xCoord * (int)mapSize) + yCoord]._inuse = 1;
         graph_manager.graph[(xCoord * (int)mapSize) + yCoord].tileFrame = tileNum;
-        graph_manager.graph[(xCoord * (int)mapSize) + yCoord].coordinateX = yCoord;
-        graph_manager.graph[(xCoord * (int)mapSize) + yCoord].coordinateY = xCoord;
+        graph_manager.graph[(xCoord * (int)mapSize) + yCoord].coordinates.x = yCoord;
+        graph_manager.graph[(xCoord * (int)mapSize) + yCoord].coordinates.y = xCoord;
         return &graph_manager.graph[(xCoord * (int)mapSize) + yCoord];
     }
     
@@ -310,21 +310,25 @@ void level_build(Level* level)
 }
 
 
-void get_next_carpet_tile(int x, int y, Entity *ent) 
+void get_next_carpet_tile(float x, float y, Entity *ent) 
 {    
     int j;
     for (j = 0; j < 4; j++) 
     {
-        slog("0 0");
-        if (get_graph_node(x, y).neighbours[j] != NULL) 
+       
+        if (get_graph_node(ent->targetGridPosition.x, ent->targetGridPosition.y).neighbours[j] != NULL) 
         {
             TileInfo* currentNeighbour;
-            currentNeighbour = get_graph_node(x, y).neighbours[j];
-            slog("how bout now");
-            if (currentNeighbour->tileFrame == 2) 
+            currentNeighbour = get_graph_node(ent->targetGridPosition.x, ent->targetGridPosition.y).neighbours[j];
+        
+            if (currentNeighbour->tileFrame == 2) //is carpet
             {
-                ent->targetGridPositionX = currentNeighbour->coordinateX;
-                ent->targetGridPositionY = currentNeighbour->coordinateY;
+                slog("Hello what is up %f hwibeieb %f", x , y);
+                if (currentNeighbour->coordinates.x != x || currentNeighbour->coordinates.y != y) {//if the currentNeighbour of the target is not the units current position
+                    slog("how bout now x %f y %f ", currentNeighbour->coordinates.x, currentNeighbour->coordinates.y);
+                    vector2d_copy(ent->targetGridPosition, currentNeighbour->coordinates);//copy 
+                    return;
+                }
             }
         }
     }
@@ -346,7 +350,7 @@ void level_draw(Level* level)
         if (get_graph_node(x, y).neighbours[i] != NULL) {
             TileInfo *currentNeighbour;
             currentNeighbour = get_graph_node(x, y).neighbours[i];
-            gf2d_draw_circle(graph_to_world_pos(currentNeighbour->coordinateX, currentNeighbour->coordinateY), 5, gfc_color(255, 0, 0, 255));
+            gf2d_draw_circle(graph_to_world_pos(currentNeighbour->coordinates.x, currentNeighbour->coordinates.y), 5, gfc_color(255, 0, 0, 255));
         }
     }
     frame += 0.1;

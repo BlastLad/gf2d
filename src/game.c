@@ -73,11 +73,10 @@ int main(int argc, char * argv[])
 
             mf = 0;
             if (remainingStudents > 0) {
-                normalStudent = normal_student_new(graph_to_world_pos(7, 2), 7, 2);
+                normalStudent = normal_student_new(graph_to_world_pos(7, 1), vector2d(7, 1));               
                 gfc_list_append(Students, normalStudent);
                 remainingStudents--;
-                get_next_carpet_tile(normalStudent->currentGridPositionX, normalStudent->currentGridPositionY, normalStudent);
-                slog("success");
+                //get_next_carpet_tile(normalStudent->currentGridPosition.x, normalStudent->currentGridPosition.y, normalStudent);
             }
         }
 

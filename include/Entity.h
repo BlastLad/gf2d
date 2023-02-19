@@ -25,10 +25,8 @@ typedef struct Entity_S {
 	Vector2D position;
 	Vector2D velocity;
 	Vector2D direction;
-	int currentGridPositionX;
-	int currentGridPositionY;
-	int targetGridPositionX;
-	int targetGridPositionY;
+	Vector2D currentGridPosition;
+	Vector2D targetGridPosition;
 
 	float speed;
 
