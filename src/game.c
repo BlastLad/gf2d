@@ -26,7 +26,7 @@ int main(int argc, char * argv[])
 
     //NEW
     
-    int mx,my;
+    int mx,my, indexer;
     float mf = 0;
     Sprite *mouse;
     Color mouseColor = gfc_color8(255,100,255,200);
@@ -82,6 +82,19 @@ int main(int argc, char * argv[])
 
         entity_think_all();
         entity_update_all();
+
+        if (Students->count > 0) {
+            for (indexer = Students->count - 1; indexer >= 0; indexer--) {
+                normalStudent = gfc_list_get_nth(Students, indexer);
+                if (!normalStudent)continue;
+                if (normalStudent->markedForDestruction > 0) {
+                    normal_student_remove_from_list(Students, normalStudent);
+                }
+            }
+        }
+
+        
+
 
         
         gf2d_graphics_clear_screen();// clears drawing buffers

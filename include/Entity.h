@@ -28,6 +28,8 @@ typedef struct Entity_S {
 	Vector2D currentGridPosition;
 	Vector2D targetGridPosition;
 
+	int markedForDestruction;
+
 	float speed;
 
 	void (*think)(struct Entity_S* self);

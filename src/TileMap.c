@@ -323,11 +323,29 @@ void get_next_carpet_tile(float x, float y, Entity *ent)
         
             if (currentNeighbour->tileFrame == 2) //is carpet
             {
-                slog("Hello what is up %f hwibeieb %f", x , y);
                 if (currentNeighbour->coordinates.x != x || currentNeighbour->coordinates.y != y) {//if the currentNeighbour of the target is not the units current position
-                    slog("how bout now x %f y %f ", currentNeighbour->coordinates.x, currentNeighbour->coordinates.y);
-                    vector2d_copy(ent->targetGridPosition, currentNeighbour->coordinates);//copy 
-                    return;
+                    if (ent->index == 0) //straight mover
+                    {
+                        if (ent->currentGridPosition.x == ent->targetGridPosition.x) {//moving straight vertically
+                            if (currentNeighbour->coordinates.x == ent->currentGridPosition.x) 
+                            {
+                                vector2d_copy(ent->targetGridPosition, currentNeighbour->coordinates);//copy 
+                            }
+                        }
+                        else if (ent->currentGridPosition.y == ent->targetGridPosition.y)//moving straight horizontally
+                        {
+                            if (currentNeighbour->coordinates.y == ent->currentGridPosition.y)
+                            {
+                                vector2d_copy(ent->targetGridPosition, currentNeighbour->coordinates);//copy 
+                            }
+                        }
+                    }
+                    else if (ent->index == 1) {
+                        vector2d_copy(ent->targetGridPosition, currentNeighbour->coordinates);//copy 
+                        return;
+                    }
+          
+                    
                 }
             }
         }

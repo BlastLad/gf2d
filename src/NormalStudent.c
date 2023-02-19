@@ -7,6 +7,8 @@
 
 void normal_student_think(Entity *self);
 
+void normal_student_update(Entity* self);
+
 Vector2D get_next_tile(int x, int y, int behaviourRule) {
 	slog("before i");
 	int i;
@@ -23,7 +25,7 @@ Vector2D get_next_tile(int x, int y, int behaviourRule) {
 
 Entity* normal_student_new(Vector2D position, Vector2D gridPosition)
 {
-	slog("before x %f before y %f", gridPosition.x, gridPosition.y);	
+	//slog("before x %f before y %f", gridPosition.x, gridPosition.y);	
 	Entity* ent;
 	ent = entity_new();
 	if (!ent)return NULL;
@@ -33,6 +35,7 @@ Entity* normal_student_new(Vector2D position, Vector2D gridPosition)
 		4,
 		0);
 	ent->think = normal_student_think;
+	ent->update = normal_student_update;
 	ent->drawOffset = vector2d(16, 16);
 	ent->speed = .5;
 	ent->startFrame = 0;
@@ -40,17 +43,27 @@ Entity* normal_student_new(Vector2D position, Vector2D gridPosition)
 	ent->endFrame = 4;
 	vector2d_copy(ent->currentGridPosition, gridPosition);
 	vector2d_copy(ent->targetGridPosition, gridPosition);
-	slog("x %f y %f", ent->currentGridPosition.x, ent->currentGridPosition.y);
+	//slog("x %f y %f", ent->currentGridPosition.x, ent->currentGridPosition.y);
 	//ent->targetGridPosition = get_next_tile(position.x, position.y, 1);
 
 	//ent->targetGridPosition =  get_next_tile(position.x, position.y, 1);//ent->currentGridPosition->neighbours[1]; 
 	//ent->currentGridPosition->neighbours[0];
 	ent->index = 0;
-
+	ent->markedForDestruction = 0;//false
 	
 	return ent;
 }
 
+
+void normal_student_update(Entity* self) 
+{
+	//slog("Marked");
+	if (self->currentGridPosition.y >= 11.0 && self->markedForDestruction == 0) {
+		//despawn or mark for despawen?
+		self->markedForDestruction = 1;
+		slog("Marked");
+	}
+}
 
 
 
