@@ -1,6 +1,6 @@
 #include "simple_logger.h"
 #include "Piper.h"
-
+#include "TileMap.h"
 
 
 void piper_think(Entity* self);
@@ -10,16 +10,24 @@ Entity* piper_entity_new(Vector2D spawnPosition)
 	Entity* ent;
 	ent = entity_new();
 	if (!ent) return NULL;
-
 	ent->sprite = gf2d_sprite_load_all(
 		"images/BeWitched_PlayerWalk.png",
 		16,
 		16,
 		4,
-		0);
+		0);	
+	ent->think = piper_think;
+
 	ent->drawOffset = vector2d(8, 8);
 	ent->shape = gfc_shape_circle(0, 0, 5);
-	ent->think = piper_think;
+	ent->body.shape = &ent->shape;
+	ent->body.worldclip = 1;
+	ent->body.ignore = false;
+	ent->body.cliplayer = 1;
+	ent->body.team = 1;
+	vector2d_copy(ent->body.position, spawnPosition);
+	level_add_entity(level_get_active_level(), ent);
+
 	vector2d_copy(ent->position, spawnPosition);
 	ent->speed = 4;
 	return ent;
@@ -59,7 +67,21 @@ void piper_think(Entity* self) {
 	}
 	
 
-	vector2d_set_magnitude(&dir, self->speed);
-	vector2d_copy(self->velocity, dir);
+	
+
+	if (vector2d_magnitude_compare(dir, 0) > 0) {
+		vector2d_set_magnitude(&dir, self->speed);
+		vector2d_copy(self->velocity, dir);
+	}
+	else 
+	{
+		//slog("IN ELSE %f %f", self->body.position.x, self->body.position.y);
+		vector2d_clear(self->body.velocity);
+	}
+
+	vector2d_normalize(&dir);
+	vector2d_copy(self->body.velocity, dir);
+
+    vector2d_copy(self->position, self->body.position);
 
 }

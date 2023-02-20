@@ -8,6 +8,7 @@
 #include "gf2d_draw.h"
 
 #include "camera.h"
+#include "Space.h";
 #include "TileMap.h"
 
 void level_build(Level* level);
@@ -213,7 +214,7 @@ TileInfo *tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize) {
     return NULL;
 }
 
-int level_shape_clip(Level* level, Shape shape)
+/*int level_shape_clip(Level* level, Shape shape)
 {
     int i, c;
     Shape* clip;
@@ -226,23 +227,52 @@ int level_shape_clip(Level* level, Shape shape)
         if (gfc_shape_overlap(*clip, shape))return 1;
     }
     return 0;
+}*/
+
+int level_shape_clip(Level* level, Shape shape)
+{
+    List* collisions;
+    if (!level)return 0;
+
+    collisions = gf2d_space_static_shape_check(level->space, shape, NULL);
+    if (collisions)
+    {
+        gfc_list_delete(collisions);
+        return 1;
+    }
+    return 0;
 }
+
 
 void level_build_clip_space(Level* level)
 {
-    Shape* shape;
-    level->clips = gfc_list_new();
+    Shape shape;
+    //level->clips = gfc_list_new();
     int i, j;
-    if (!level)return;
+    if ((!level) || (!level->tileLayer))return;
+
+    level->space = gf2d_space_new_full(
+        3,
+        gfc_rect(0, 0, level->tileLayer->frame_w, level->tileLayer->frame_h),
+        0.01,
+        vector2d(0, 0),
+        1,
+        1,//slop
+        1,//use hash or not
+        vector2d(128, 128));//could be problems with this
+
+    if (!level->space)return;
+
     for (j = 0; j < level->mapSize.y; j++)//j is row
     {
         for (i = 0; i < level->mapSize.x; i++)// i is column
         {
             if (level->tileMap[(j * (int)level->mapSize.x) + i] != 1)continue;//skip zero
-            shape = gfc_allocate_array(sizeof(Shape), 1);
-            if (!shape)continue;
-            *shape = gfc_shape_rect(i * level->tileSize.x, j * level->tileSize.y, level->tileSize.x, level->tileSize.y);
-            gfc_list_append(level->clips, shape);
+            //shape = gfc_allocate_array(sizeof(Shape), 1);
+            //if (!shape)continue;
+            shape = gfc_shape_rect(i * level->tileSize.x, j * level->tileSize.y, level->tileSize.x, level->tileSize.y);
+            gf2d_space_add_static_shape(level->space, shape);
+            //gfc_list_append(level->clips, shape);
         }
     }
 }
@@ -395,6 +425,13 @@ void level_draw(Level* level)
 
 }
 
+//The start of updating the space/level/scene
+void tileMap_Update(Level* level) {
+    if (!level)return;
+    gf2d_space_update(level->space);
+}
+
+
 Level* level_new()
 {
     Level* level;
@@ -409,9 +446,20 @@ void level_free(Level* level)
     if (level->tileSet)gf2d_sprite_free(level->tileSet);
     if (level->tileLayer)gf2d_sprite_free(level->tileLayer);
     if (level->tileMap)free(level->tileMap);
-    gfc_list_foreach(level->clips, free);
-    gfc_list_delete(level->clips);
+    if (level->space)gf2d_space_free(level->space);
+    if (level->clips) 
+    {
+        gfc_list_foreach(level->clips, free);
+        gfc_list_delete(level->clips);
+    }
     free(level);
+}
+
+//adds the body to the space buckets
+void level_add_entity(Level* level, Entity* entity) 
+{
+    if ((!level) || (!entity))return;
+    gf2d_space_add_body(level->space, &entity->body);
 }
 
 /*eol@eof*/

@@ -4,6 +4,7 @@
 #include "gfc_text.h"
 #include "gfc_shape.h"
 #include "gf2d_sprite.h"
+#include "Space.h"
 #include "Entity.h"
 
 
@@ -24,6 +25,7 @@ typedef struct
     Vector2D    mapSize;    //the width and height of the tile map
     int* tileMap;    //WTF???
     Sprite* tileLayer;  //TBD
+    Space* space;
     List *clips;      //list of static shapes to clip against in the game world
 }Level;
 
@@ -76,6 +78,10 @@ Level* level_load(const char* filename);
  * @param level the level to draw
  */
 void level_draw(Level* level);
+
+void tileMap_Update(Level* level);
+
+void level_add_entity(Level* level, Entity* entity);
 
 
 TileInfo *tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize);

@@ -38,6 +38,18 @@ Entity* normal_student_new(Vector2D position, Vector2D gridPosition)
 	ent->update = normal_student_update;
 	ent->drawOffset = vector2d(16, 16);
 	ent->speed = .5;
+
+	//collion stuff
+	ent->shape = gfc_shape_circle(0, 0, 5);
+	ent->body.shape = &ent->shape;
+	ent->body.worldclip = 1;
+	ent->body.ignore = false;
+	ent->body.cliplayer = 1;
+	ent->body.team = 2;
+	vector2d_copy(ent->body.position, position);
+	level_add_entity(level_get_active_level(),ent);
+	//collision stuff end
+
 	ent->startFrame = 0;
 	vector2d_copy(ent->position, position);
 	ent->endFrame = 4;
@@ -95,7 +107,14 @@ void normal_student_think(Entity* self) {
 	//dir.y += 1;
 	vector2d_normalize(&dir);
 	vector2d_set_magnitude(&dir, self->speed);
+	vector2d_copy(self->body.velocity, dir);
 	vector2d_copy(self->velocity, dir);
+	
+	vector2d_copy(self->position, self->body.position);
+
+	//vector2d_copy(pos, dir);
+
+
 }
 
 void normal_student_remove_from_list(List *student_list, Entity* self) 

@@ -8,15 +8,19 @@
 #include "NormalStudent.h"
 #include "TileMap.h"
 #include "camera.h"
+#include "ClipLayers.h"
 //#include "../gfc/include/gfc_pak.h"
 
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
     int done = 0;
-    int remainingStudents = 20;
-    Level *tileMap;
+    Level* tileMap;
+
+    int remainingStudents = 1;
+   
     const Uint8 * keys;
+
     Sprite *sprite;
     //NEW
     Entity *playerEntity;//make it pointer probs for all this shit
@@ -45,6 +49,7 @@ int main(int argc, char * argv[])
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     entity_manager_init(1024);
+    gf3d_cliplayers_init("config/cliplayers.cfg");
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
@@ -80,8 +85,9 @@ int main(int argc, char * argv[])
             }
         }
 
-        entity_think_all();
-        entity_update_all();
+        entity_think_all();//need to check
+        tileMap_Update(level_get_active_level());//need to check
+        entity_update_all();//need to check
 
         if (Students->count > 0) {
             for (indexer = Students->count - 1; indexer >= 0; indexer--) {
@@ -101,7 +107,7 @@ int main(int argc, char * argv[])
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
             gf2d_sprite_draw_image(sprite,vector2d(0,0));
-            level_draw(level_get_active_level());
+            level_draw(level_get_active_level());//need to check
             entity_draw_all();
             //UI elements last
             gf2d_sprite_draw(

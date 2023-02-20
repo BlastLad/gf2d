@@ -52,6 +52,7 @@ void entity_free_all() {
 
 Entity *entity_new() {//because we return a pointer to the new element of the list
 	int i;
+
 	for (i = 0; i < entity_manager.entity_max; i++) {
 		if (entity_manager.entity_list[i]._inuse)continue;
 		entity_manager.entity_list[i]._inuse = 1;//true
@@ -80,7 +81,7 @@ void entity_draw(Entity* ent) {
 		{
 			if (ent->frame < ent->startFrame) ent->frame = ent->startFrame;
 			if (ent->frame > ent->endFrame) ent->frame = ent->startFrame;
-			gf2d_sprite_draw(ent->sprite, ent->position, NULL, &ent->drawOffset, NULL, NULL, NULL, (int)ent->frame);
+			gf2d_sprite_draw(ent->sprite, ent->body.position, NULL, &ent->drawOffset, NULL, NULL, NULL, (int)ent->frame);
 
 		}
 	}
@@ -104,14 +105,18 @@ void entity_update(Entity* ent) {
 	if (!ent)return;
 	ent->frame += 0.1;
 	if (ent->frame >= 16)ent->frame = 0;
-	if (ent->update)ent->update(ent);
+
+
+	if (ent->update)ent->update(ent);	
+
 	if (level_shape_clip(level_get_active_level(), entity_get_shape_after_move(ent))) {
 
 		return;
 	}
-
-	vector2d_add(ent->position, ent->position, ent->velocity);
+//	vector2d_add(ent->position, ent->position, ent->velocity);
 }
+
+
 
 void entity_update_all() 
 {

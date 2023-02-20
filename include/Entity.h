@@ -5,6 +5,7 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 #include "gfc_shape.h"
+#include "Body.h"
 
 /**
 *@brief the structure of an entity
@@ -18,6 +19,10 @@ typedef struct Entity_S {
 	float endFrame;
 
 	Shape shape;//the collision shape that will be used for colliders
+	Body body;
+	int layer;//or team
+	int clips;//if false skip collisions
+
 
 	int index;
 
