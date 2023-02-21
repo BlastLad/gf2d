@@ -23,8 +23,10 @@ Entity* piper_entity_new(Vector2D spawnPosition)
 	ent->body.shape = &ent->shape;
 	ent->body.worldclip = 1;
 	ent->body.ignore = false;
-	ent->body.cliplayer = 1;
+	ent->body.cliplayer = 1, 2;
 	ent->body.team = 1;
+	ent->tag = 2;
+
 	vector2d_copy(ent->body.position, spawnPosition);
 	level_add_entity(level_get_active_level(), ent);
 

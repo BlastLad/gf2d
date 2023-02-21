@@ -4,7 +4,7 @@
 #include "gfc_list.h"
 #include "gfc_text.h"
 #include "gfc_shape.h"
-
+//#include "Entity.h"
 /**
  * @purpose bodies are used to track physics enabled objects in the 2d collisions space system
  */
@@ -12,6 +12,7 @@
 typedef struct Body_S
 {
     TextLine    name;           /**<name for debugging purposes*/
+    //Entity* entityAttached;
     int         inactive;       /**<internal use only*/
     float       gravity;        /**<the factor this body adheres to gravity*/
     Uint8       worldclip;      /**<if this body should clip the world bounds and static shapes*/
@@ -26,7 +27,7 @@ typedef struct Body_S
     Shape* shape;          /**<which shape data will be used to collide for this body*/
     void* data;           /**<custom data pointer*/
     struct Body_S* ignore;      /**<if true, ignore this body   */
-    int       (*touch)(struct Body_S* self, List* collision);/**< function to call when two bodies collide*/
+    int       (*touch)(struct DynamicBody* self, List* collision);/**< function to call when two bodies collide*/
 }Body;
 
 /**

@@ -459,7 +459,7 @@ void level_free(Level* level)
 void level_add_entity(Level* level, Entity* entity) 
 {
     if ((!level) || (!entity))return;
-    gf2d_space_add_body(level->space, &entity->body);
+    gf2d_space_add_body(level->space, &entity->body, entity);
 }
 
 /*eol@eof*/

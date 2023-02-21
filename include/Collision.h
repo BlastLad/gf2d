@@ -20,6 +20,7 @@
 typedef struct Collision_S
 {
     Uint8    collided;          /**<true if the there as a collision*/
+    Uint8 collisionTag;
     Uint8    blocked;           /**<true if this blocked any further movement.  Default for non elastic collisions*/
     Vector2D pointOfContact;    /**<point in space that contact was made*/
     Vector2D normal;            /**<normal vector at the point of contact*/

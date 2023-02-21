@@ -9,6 +9,7 @@
 #include "TileMap.h"
 #include "camera.h"
 #include "ClipLayers.h"
+#include "Rugby.h"
 //#include "../gfc/include/gfc_pak.h"
 
 int main(int argc, char * argv[])
@@ -26,6 +27,7 @@ int main(int argc, char * argv[])
     Entity *playerEntity;//make it pointer probs for all this shit
     List *Students;
     Entity* normalStudent;
+    Entity* entityCreator;
 
 
     //NEW
@@ -60,7 +62,9 @@ int main(int argc, char * argv[])
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
 
-    playerEntity = piper_entity_new(graph_to_world_pos(8, 6));
+    playerEntity = piper_entity_new(graph_to_world_pos(7, 6));
+    Rugby_New(graph_to_world_pos(7, 9), vector2d(7, 9));
+
 
     Students = gfc_list_new();
 

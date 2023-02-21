@@ -87,7 +87,7 @@ void entity_draw(Entity* ent) {
 	}
 
 	//gf2d_draw_pixel(ent->position, GFC_COLOR_YELLOW);
-	gf2d_draw_circle(ent->position, 5, gfc_color(255,0,0,255));
+	gf2d_draw_circle(ent->body.position, ent->body.shape->s.c.r, gfc_color(255,0,0,255));
 }
 
 void entity_draw_all() 

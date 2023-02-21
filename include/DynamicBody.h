@@ -2,6 +2,7 @@
 #define __DYNAMIC_BODY_H__
 
 #include "Body.h"
+#include "Entity.h"
 #include "Collision.h"
 
 typedef struct
@@ -14,6 +15,7 @@ typedef struct
     Vector2D    oldPosition;    /**<previous position during update*/
     Vector2D    velocity;       /**<scaled velocity based on space step*/
     double      speed;          /**<scalar speed of velocity of the body*/
+    Entity* entityAttached;
     List* collisionList;  /**<list of collisions accrued during space update*/
     List* bucketList;     /**<list of space buckets we sit in*/
 }DynamicBody;

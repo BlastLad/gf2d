@@ -1,13 +1,16 @@
 #include "simple_logger.h"
 #include "gf2d_graphics.h"
-#include "Entity.h"
+#include "Collision.h"
 #include "NormalStudent.h"
+#include "DynamicBody.h"
 #include "TileMap.h"
 
 
 void normal_student_think(Entity *self);
 
 void normal_student_update(Entity* self);
+
+int student_on_collision(DynamicBody* self, List* collision);
 
 Vector2D get_next_tile(int x, int y, int behaviourRule) {
 	slog("before i");
@@ -46,9 +49,12 @@ Entity* normal_student_new(Vector2D position, Vector2D gridPosition)
 	ent->body.ignore = false;
 	ent->body.cliplayer = 1;
 	ent->body.team = 2;
+	ent->tag = 1;	
 	vector2d_copy(ent->body.position, position);
 	level_add_entity(level_get_active_level(),ent);
 	//collision stuff end
+
+	ent->body.touch = student_on_collision;
 
 	ent->startFrame = 0;
 	vector2d_copy(ent->position, position);
@@ -77,7 +83,23 @@ void normal_student_update(Entity* self)
 	}
 }
 
+int student_on_collision(DynamicBody* self, List* collision) {
+	int i, selfIndex;
+	Collision* other;
 
+
+	for (i = 0; i < collision->count; i++)
+	{		
+		other = (Collision*)gfc_list_get_nth(collision, i);
+		if (!other) continue;
+		slog("Student collided %i", other->collisionTag);
+		//slog("Student collided %i", self->entityAttached->tag);
+		if (other->collisionTag == 2) {
+			self->entityAttached->markedForDestruction = 1;
+			return;
+		}
+	}
+}
 
 void normal_student_think(Entity* self) {
 	Vector2D dir;

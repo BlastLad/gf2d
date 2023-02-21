@@ -2,7 +2,7 @@
 #define __SPACE_H__
 
 #include "gfc_shape.h"
-#include "Body.h"
+#include "Entity.h"
 
 typedef struct 
 {
@@ -74,7 +74,7 @@ void gf2d_space_draw(Space* space, Vector2D offset);
  * @param body the body to add to the space
  * @note the space will not free the body, but do not until it has been removed from the space
  */
-void gf2d_space_add_body(Space* space, Body* body);
+void gf2d_space_add_body(Space* space, Body* body, Entity* ent);
 
 /**
  * @brief removes a body from the space

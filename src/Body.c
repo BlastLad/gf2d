@@ -59,7 +59,7 @@ void gf2d_body_set(
     float       elasticity,
     Shape* shape,
     void* data,
-    int         (*touch)(struct Body_S* self, List* collision))
+    int         (*touch)(struct DynamicBody* self, List* collision))
 {
     if (!body)return;
     body->cliplayer = cliplayer;

@@ -439,7 +439,7 @@ void gf2d_space_add_body_to_buckets(Space* space, DynamicBody* db)
     }
 }
 
-void gf2d_space_add_body(Space* space, Body* body)
+void gf2d_space_add_body(Space* space, Body* body, Entity* ent)
 {
     DynamicBody* db = NULL;
     if (!space)
@@ -456,6 +456,7 @@ void gf2d_space_add_body(Space* space, Body* body)
     db = gf2d_dynamic_body_new();
     if (!db)return;
     db->body = body;
+    db->entityAttached = ent;
     db->id = space->idpool++;
     space->dynamicBodyList = gfc_list_append(space->dynamicBodyList, (void*)db);
     slog("added synamic body");
@@ -603,9 +604,17 @@ void gf2d_space_dynamic_bodies_body_step(Space* space, DynamicBody* db, float t)
                 collision = gf2d_dynamic_body_collision_check(db, other, t);
                 if (collision == NULL)continue;
                 db->collisionList = gfc_list_append(db->collisionList, (void*)collision);
+                if (db->body->touch) 
+                {                    
+                    db->body->touch(db, db->collisionList);//new
+                }
+                
             }
+
             bucket = gf2d_space_bucket_foreach_clipped(space, gfc_shape_get_bounds(bodyShape), bucket);
         }
+
+   
     }
     else
     {
@@ -630,7 +639,10 @@ void gf2d_space_dynamic_bodies_step(Space* space, DynamicBody* db, float t)
     int normalCount;
     int i, count;
     if ((!space) || (!db))return;
-    if ((!db->velocity.x) && (!db->velocity.y))return;// skip entities that are not moving
+
+    //if ((!db->velocity.x) && (!db->velocity.y))return;// skip entities that are not moving, i dont like that we got rid of this but for
+    //now we will live with it
+
     // save our place in case of collision
     vector2d_copy(db->oldPosition, db->position);
     vector2d_add(db->position, db->position, db->velocity);

@@ -114,6 +114,7 @@ Collision* gf2d_dynamic_body_collision_check(DynamicBody* dba, DynamicBody* dbb,
     if (!collision)return NULL;
     collision->body = dbb->body;
     collision->timeStep = timeStep;
+    collision->collisionTag = dbb->entityAttached->tag;
     //TODO: collision->pointOfContact;
     collision->normal = gfc_shape_get_normal_for_shape(gf2d_dynamic_body_to_shape(dbb), gf2d_dynamic_body_to_shape(dba));
     collision->shape = dbb->shape;
