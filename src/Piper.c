@@ -1,6 +1,7 @@
 #include "simple_logger.h"
 #include "Piper.h"
 #include "TileMap.h"
+#include "SleepSpell.h"
 
 
 void piper_think(Entity* self);
@@ -17,15 +18,15 @@ Entity* piper_entity_new(Vector2D spawnPosition)
 		4,
 		0);	
 	ent->think = piper_think;
-
+	ent->body.inuse = true;
 	ent->drawOffset = vector2d(8, 8);
 	ent->shape = gfc_shape_circle(0, 0, 5);
 	ent->body.shape = &ent->shape;
 	ent->body.worldclip = 1;
 	ent->body.ignore = false;
-	ent->body.cliplayer = 1, 2;
+	ent->body.cliplayer = 1;
 	ent->body.team = 1;
-	ent->tag = 2;
+	ent->tag = Player;
 
 	vector2d_copy(ent->body.position, spawnPosition);
 	level_add_entity(level_get_active_level(), ent);
@@ -36,6 +37,8 @@ Entity* piper_entity_new(Vector2D spawnPosition)
 
 
 }
+
+static int spacebarDown = 0;
 
 void piper_think(Entity* self) {
 
@@ -59,7 +62,7 @@ void piper_think(Entity* self) {
 	}
 	if (keys[SDL_SCANCODE_A]) {
 		dir.x -= 1;
-		self->startFrame = 15;
+		self->startFrame = 5;
 		self->endFrame = 18;
 	}
 	if (keys[SDL_SCANCODE_D]) {
@@ -68,7 +71,16 @@ void piper_think(Entity* self) {
 		self->endFrame = 8;
 	}
 	
+	if (keys[SDL_SCANCODE_SPACE] && spacebarDown == 0) 
+	{
+		spacebarDown = 1;
+		sleep_spell_new(self->position, self, dir);
 
+	}
+	else if (!keys[SDL_SCANCODE_SPACE]) 
+	{
+		spacebarDown = 0;
+	}
 	
 
 	if (vector2d_magnitude_compare(dir, 0) > 0) {

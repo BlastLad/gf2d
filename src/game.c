@@ -18,7 +18,7 @@ int main(int argc, char * argv[])
     int done = 0;
     Level* tileMap;
 
-    int remainingStudents = 1;
+    int remainingStudents = 20;
    
     const Uint8 * keys;
 
@@ -51,6 +51,7 @@ int main(int argc, char * argv[])
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     entity_manager_init(1024);
+    gf2d_body_manager_init(200);
     gf3d_cliplayers_init("config/cliplayers.cfg");
     SDL_ShowCursor(SDL_DISABLE);
     
@@ -83,9 +84,8 @@ int main(int argc, char * argv[])
             mf = 0;
             if (remainingStudents > 0) {
                 normalStudent = normal_student_new(graph_to_world_pos(7, 1), vector2d(7, 1));               
-                gfc_list_append(Students, normalStudent);
+             //   gfc_list_append(Students, normalStudent);
                 remainingStudents--;
-                //get_next_carpet_tile(normalStudent->currentGridPosition.x, normalStudent->currentGridPosition.y, normalStudent);
             }
         }
 
@@ -93,7 +93,7 @@ int main(int argc, char * argv[])
         tileMap_Update(level_get_active_level());//need to check
         entity_update_all();//need to check
 
-        if (Students->count > 0) {
+       /* if (Students->count > 0) {
             for (indexer = Students->count - 1; indexer >= 0; indexer--) {
                 normalStudent = gfc_list_get_nth(Students, indexer);
                 if (!normalStudent)continue;
@@ -101,7 +101,7 @@ int main(int argc, char * argv[])
                     normal_student_remove_from_list(Students, normalStudent);
                 }
             }
-        }
+        }*/
 
         
 
@@ -127,7 +127,7 @@ int main(int argc, char * argv[])
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
-        //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
+       // slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     level_free(tileMap);
     entity_free(playerEntity);

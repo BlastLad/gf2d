@@ -70,6 +70,8 @@ void entity_free(Entity *ent) {//because we take in the pointer to the element
 		return;
 	}
 	if (ent->sprite)gf2d_sprite_free(ent->sprite);//sprite is an allocated type
+	if (&ent->body)gf2d_body_clear(&ent->body);
+	if (&ent->shape)
 	memset(ent, 0, sizeof(Entity));
 }
 

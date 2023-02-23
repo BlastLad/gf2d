@@ -255,6 +255,7 @@ List* gf2d_space_static_shape_check(Space* space, Shape shape, List* collisionLi
                 collision = gf2d_collision_space_static_shape_clip(shape, *staticShape);
                 if (collision == NULL)continue;
                 collisionList = gfc_list_append(collisionList, (void*)collision);
+                //tesrt 1
             }
             bucket = gf2d_space_bucket_foreach_clipped(space, gfc_shape_get_bounds(shape), bucket);
         }
@@ -555,6 +556,12 @@ void gf2d_space_dynamic_bodies_world_clip(Space* space, DynamicBody* db, float t
                 collision = gf2d_dynamic_body_shape_collision_check(db, *shape, t);
                 if (collision == NULL)continue;
                 db->collisionList = gfc_list_append(db->collisionList, (void*)collision);
+                slog("Collided with world true");
+                if (db->body->worldtouch) {
+                    slog("Collided with world");
+                    db->body->worldtouch(db, db->collisionList);
+
+                }
             }
             bucket = gf2d_space_bucket_foreach_clipped(space, gfc_shape_get_bounds(bodyShape), bucket);
         }

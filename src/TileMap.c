@@ -462,4 +462,14 @@ void level_add_entity(Level* level, Entity* entity)
     gf2d_space_add_body(level->space, &entity->body, entity);
 }
 
+void level_remove_entity(Entity* ent)
+{
+    if (!ent)return;
+    if (!level_get_active_level()->space)
+    {//nothing to do
+        return;
+    }
+    gf2d_space_remove_body(level_get_active_level()->space, &ent->body);
+}
+
 /*eol@eof*/

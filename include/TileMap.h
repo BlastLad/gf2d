@@ -83,6 +83,7 @@ void tileMap_Update(Level* level);
 
 void level_add_entity(Level* level, Entity* entity);
 
+void level_remove_entity(Entity* ent);
 
 TileInfo *tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize);
 

@@ -8,11 +8,20 @@
 #include "Body.h"
 
 
+enum CollisonLayers
+{
+	AllFurniture = 1,//This team compri
+	SolidFurniture = 2,
+	CollideWithProjectilesAndStudent = 3,
+	CollideWithProjectilesAndStudentAndPlayer = 4
+};
+
 enum EntityTags
 {
 	Student = 1,
 	Player = 2,
-	Furniture = 3
+	Furniture = 3,
+	Projectile = 4
 };
 /**
 *@brief the structure of an entity
@@ -33,7 +42,8 @@ typedef struct Entity_S {
 
 	int index;
 
-	int tag;
+	struct Entity_S* parent;
+	enum EntityTags tag;
 
 	Vector2D drawOffset;
 	Vector2D position;

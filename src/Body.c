@@ -9,11 +9,22 @@
 #include "Body.h"
 
 
+
+typedef struct
+{
+    Uint32 body_max;
+    Body* body_list;
+    SJson* body_def;
+}BodyManager;
+
+static BodyManager body_manager = { 0 };
+
 Uint8 gf2d_body_shape_collide(Body* a, Shape* s, Vector2D* poc, Vector2D* normal);
 
 void gf2d_body_clear(Body* body)
 {
     if (!body)return;
+    body->inuse = false;
     memset(body, 0, sizeof(Body));
 }
 
@@ -94,6 +105,43 @@ Uint8 gf2d_body_body_collide(Body* a, Body* b)
         return 0;
     }
     return gfc_shape_overlap(gf2d_body_to_shape(a), gf2d_body_to_shape(b));
+}
+
+
+void body_manager_close() {
+
+    body_free_all();
+    if (body_manager.body_list)
+    {
+        free(body_manager.body_list);
+    }
+    slog("body system closed");
+}
+
+void body_free_all() {
+    int i;
+    for (i = 0; i < body_manager.body_max; i++) {
+        if (!body_manager.body_list[i].inuse)continue;        
+        gf2d_body_clear(&body_manager.body_list[i]);
+    }
+}
+
+void gf2d_body_manager_init(Uint32 max) 
+{
+    if (max <= 0)
+    {
+        slog("cannot inialize entity system: zero entities specified!");
+        return;
+    }
+    body_manager.body_list = gfc_allocate_array(sizeof(Body), max);
+    if (!body_manager.body_list) {
+        slog("failed to initialize body system!");
+        return;
+    }
+    body_manager.body_max = max;
+    body_manager.body_def = sj_load("config/entities.def");
+    atexit(body_manager_close);//like an on disable but for the whole prog
+    slog("body system initialized");
 }
 
 void gf2d_body_from_config(Body* body, SJson* config)

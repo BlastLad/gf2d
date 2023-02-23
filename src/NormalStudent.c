@@ -12,6 +12,8 @@ void normal_student_update(Entity* self);
 
 int student_on_collision(DynamicBody* self, List* collision);
 
+void normal_student_destroy(Entity *self);
+
 Vector2D get_next_tile(int x, int y, int behaviourRule) {
 	slog("before i");
 	int i;
@@ -45,11 +47,12 @@ Entity* normal_student_new(Vector2D position, Vector2D gridPosition)
 	//collion stuff
 	ent->shape = gfc_shape_circle(0, 0, 5);
 	ent->body.shape = &ent->shape;
+	ent->body.inuse = true;
 	ent->body.worldclip = 1;
 	ent->body.ignore = false;
-	ent->body.cliplayer = 1;
+	ent->body.cliplayer = 2;
 	ent->body.team = 2;
-	ent->tag = 1;	
+	ent->tag = Student;	
 	vector2d_copy(ent->body.position, position);
 	level_add_entity(level_get_active_level(),ent);
 	//collision stuff end
@@ -79,7 +82,10 @@ void normal_student_update(Entity* self)
 	if (self->currentGridPosition.y >= 11.0 && self->markedForDestruction == 0) {
 		//despawn or mark for despawen?
 		self->markedForDestruction = 1;
-		slog("Marked");
+		normal_student_destroy(self);
+	}
+	else if (self->markedForDestruction == 1) {
+		normal_student_destroy(self);
 	}
 }
 
@@ -87,18 +93,22 @@ int student_on_collision(DynamicBody* self, List* collision) {
 	int i, selfIndex;
 	Collision* other;
 
-
+	
 	for (i = 0; i < collision->count; i++)
 	{		
 		other = (Collision*)gfc_list_get_nth(collision, i);
 		if (!other) continue;
-		slog("Student collided %i", other->collisionTag);
+		//
 		//slog("Student collided %i", self->entityAttached->tag);
-		if (other->collisionTag == 2) {
+		if (other->collisionTag == Furniture) {
+
+			//slog("Student collided %i", other->collisionTag);
 			self->entityAttached->markedForDestruction = 1;
-			return;
+			return 1;
 		}
 	}
+
+	return 0;
 }
 
 void normal_student_think(Entity* self) {
@@ -139,8 +149,14 @@ void normal_student_think(Entity* self) {
 
 }
 
+void normal_student_destroy(Entity* self) {
+	level_remove_entity(self);
+	entity_free(self);
+}
+
 void normal_student_remove_from_list(List *student_list, Entity* self) 
 {
 	gfc_list_delete_data(student_list, self);
+	level_remove_entity(self);
 	entity_free(self);
 }

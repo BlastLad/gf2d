@@ -7,7 +7,7 @@ void rugby_think(Entity* self);
 
 void rugby_update(Entity* self);
 
-int rugby_on_collision(struct DynamicBody* self, List* collision);
+int rugby_on_collision(DynamicBody* self, List* collision);
 
 Entity* Rugby_New(Vector2D position, Vector2D gridPosition) 
 {
@@ -26,14 +26,16 @@ Entity* Rugby_New(Vector2D position, Vector2D gridPosition)
 	ent->speed = 0.5;
 	//collion stuff
 	ent->shape = gfc_shape_circle(0, 0, 10);
+	ent->body.inuse = true;
 	ent->body.shape = &ent->shape;
 	ent->body.worldclip = 1;
 	ent->body.ignore = false;
 	ent->body.cliplayer = 1, 2;
 	ent->body.team = 3;
 	ent->body.touch = rugby_on_collision;
+	ent->body.entityAttached = ent;
 	//ent->body.worldclip = rugby_on_collision;
-	ent->tag = 2;
+	ent->tag = Furniture;
 	vector2d_copy(ent->body.position, position);
 	//gf2d_space_add_static_shape(level_get_active_level()->space, *ent->body.shape);
 
@@ -53,25 +55,26 @@ Entity* Rugby_New(Vector2D position, Vector2D gridPosition)
 	return ent;
 }
 
-int rugby_on_collision(struct DynamicBody* self, List* collision) {
+int rugby_on_collision(DynamicBody* self, List* collision) {
 
-	int i;
-	Entity *other;
+	int i, selfIndex;
+	Collision* other;
 
-	for (i = 0; i < collision->count; i++) 
+
+	for (i = 0; i < collision->count; i++)
 	{
-		other = (Entity*)gfc_list_get_nth(collision, i);
+		other = (Collision*)gfc_list_get_nth(collision, i);
 		if (!other) continue;
-		if (other->tag == 1) 
-		{
-			//self->	
-			slog("Student collided rug");
-			other->markedForDestruction = 1;
-			return;
+		
+		//slog("Student collided %i", self->entityAttached->tag);
+		if (other->collisionTag == Player && self->entityAttached->markedForDestruction == 0) {//collider with player
+			self->entityAttached->body.team = 2;
+			self->entityAttached->markedForDestruction = 1;
+			//slog("Student collided %i", self->entityAttached->body.cliplayer);
+			return 1;
 		}
 	}
-
-
+	return 0;
 }
 
 void Rugby_remove_from_list(List* rugby_list, Entity* self) 

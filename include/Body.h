@@ -27,8 +27,18 @@ typedef struct Body_S
     Shape* shape;          /**<which shape data will be used to collide for this body*/
     void* data;           /**<custom data pointer*/
     struct Body_S* ignore;      /**<if true, ignore this body   */
+    struct Entity* entityAttached;
+    Bool inuse;
     int       (*touch)(struct DynamicBody* self, List* collision);/**< function to call when two bodies collide*/
+    int       (*worldtouch)(struct DynamicBody* self, List* collision);/**< function to call when two bodies collide*/
 }Body;
+
+
+
+void gf2d_body_manager_init(Uint32 max);
+
+void body_free_all();
+
 
 /**
  * @brief check if the two bodies provided are overlapping in any way
