@@ -60,9 +60,40 @@ Entity* sleep_spell_new(Vector2D spawnPosition, Entity* parent, Vector2D directi
 int sleep_spell_world_collision(DynamicBody* self, List* collision) 
 {
 	
-	slog("Reached the sleep");
-		self->entityAttached->markedForDestruction = 1;
+	int i;
+	Collision* other;
+
+	for (i = 0; i < collision->count; i++)
+	{
+		other = (Collision*)gfc_list_get_nth(collision, i);
+		if (!other) continue;
+		
+		if (other->collisionTag == Furniture) {//collider with player
+
+			Entity* ent;
+			ent = other->ent;
 	
+			if (ent) {
+				slog("Student collided wrold %i", other->collisionTag);
+				if (ent)
+				{
+					ent->markedForDestruction = 1;
+					self->entityAttached->markedForDestruction = 1;
+					ent->startFrame = 0;
+					ent->endFrame = 2;
+					return 1;
+				}
+			}
+			//slog("Student collided %i", self->entityAttached->body.cliplayer);
+		
+		}
+
+		if (self->blocked) 
+		{
+			self->entityAttached->markedForDestruction = 1;
+		}
+	}
+
 	return 1;
 }
 
@@ -71,17 +102,17 @@ int sleep_spell_collision(DynamicBody* self, List* collision)
 	int i;
 	Collision* other;
 
-
+	
 	for (i = 0; i < collision->count; i++)
 	{
 		other = (Collision*)gfc_list_get_nth(collision, i);
 		if (!other) continue;
-
-		//slog("Student collided %i", self->entityAttached->tag);
+		
 		if (other->collisionTag == Furniture) {//collider with player
 			
 			Body* bod;
 			bod = other->body;
+		
 			if (bod) {
 				bod->team = 2;
 				Entity* ent;

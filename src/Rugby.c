@@ -26,6 +26,8 @@ Entity* Rugby_New(Vector2D position, Vector2D gridPosition)
 	ent->speed = 0.5;
 	//collion stuff
 	ent->shape = gfc_shape_circle(0, 0, 10);
+	ent->shape.identifier = Furniture;
+	ent->shape.tag = Trigger;
 	ent->body.inuse = true;
 	ent->body.shape = &ent->shape;
 	ent->body.worldclip = 1;

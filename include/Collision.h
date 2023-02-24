@@ -26,6 +26,7 @@ typedef struct Collision_S
     Vector2D normal;            /**<normal vector at the point of contact*/
     Shape    shape;             /**<shape information on what what contacted*/
     Body* body;              /**<body information if a body was collided with*/
+    Entity* ent;
     Uint8    bounds;            /**<true if this collision was with the space bounds*/
     float    timeStep;          /**<at what time step contact was made*/
 }Collision;

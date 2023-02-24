@@ -16,6 +16,7 @@ void SetTagsFurnitureCollider(Entity* self)
 	self->tag = Furniture;
 	self->shape.tag = Solid;
 	self->shape.identifier = Furniture;
+	self->shape.ent = self;
 }
 
 void SetTagsNonFurnitureCollider(Entity* self)
@@ -96,5 +97,38 @@ void bubbles_think(Entity* self) {
 
 void bubbles_update(Entity* self) 
 {
+	if (self->markedForDestruction == 1)
+	{
+		BubbleEatBox* bbe;
+		bbe = (struct BubbleEatBox*)self->data;
+		if (self->timer == 0) 
+		{
+	
+			if (bbe)
+			{
+				slog("here");
+				bbe->boxShape.identifier = Blank;
+				bbe->parent = self;
+				bbe->boxShape.tag = Trigger;
+				self->data = (void*)&bbe;
+			}
+		}
 
+		self->timer += 0.1;
+		if (self->timer >= 64.0) {
+
+			if (bbe) 
+			{
+				bbe->boxShape.identifier = Furniture;
+				bbe->parent = self;
+				bbe->boxShape.tag = Trigger;
+				self->data = (void*)&bbe;
+			}
+			self->body.team = 3;
+			self->timer = 0;
+			self->startFrame = 3;
+			self->endFrame = 7;
+			self->markedForDestruction = 0;
+		}
+	}
 }

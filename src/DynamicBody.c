@@ -68,10 +68,21 @@ Collision* gf2d_dynamic_body_shape_collision_check(DynamicBody* dba, Shape shape
     collision = gf2d_collision_new();
     if (!collision)return NULL;
     collision->body = NULL;
+    if (shape.ent != NULL)
+    {
+        collision->ent = shape.ent;
+    }
     collision->timeStep = timeStep;
     //TODO: collision->pointOfContact;
+
     collision->normal = gfc_shape_get_normal_for_shape(shape, gf2d_dynamic_body_to_shape(dba));
     collision->shape = shape;
+
+    if (collision->collisionTag < 1) 
+    {
+        collision->collisionTag = shape.identifier;
+    }
+
     if (shape.tag == Solid)
         dba->blocked = 1; //moved to space
     else
@@ -118,6 +129,7 @@ Collision* gf2d_dynamic_body_collision_check(DynamicBody* dba, DynamicBody* dbb,
     collision->body = dbb->body;
     collision->timeStep = timeStep;
     collision->collisionTag = dbb->entityAttached->tag;
+
     //TODO: collision->pointOfContact;
     collision->normal = gfc_shape_get_normal_for_shape(gf2d_dynamic_body_to_shape(dbb), gf2d_dynamic_body_to_shape(dba));
     collision->shape = dbb->shape;
@@ -125,6 +137,13 @@ Collision* gf2d_dynamic_body_collision_check(DynamicBody* dba, DynamicBody* dbb,
     {
         dba->blocked = 1;
     }
+
+    if (dba->shape.tag == Trigger || dbb->shape.tag == Trigger) 
+    {
+        dba->blocked = 0;
+        dbb->blocked = 0;
+    }
+
     return collision;
 }
 
