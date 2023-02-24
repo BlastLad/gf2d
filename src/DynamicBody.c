@@ -72,7 +72,10 @@ Collision* gf2d_dynamic_body_shape_collision_check(DynamicBody* dba, Shape shape
     //TODO: collision->pointOfContact;
     collision->normal = gfc_shape_get_normal_for_shape(shape, gf2d_dynamic_body_to_shape(dba));
     collision->shape = shape;
-    dba->blocked = 1;
+    if (shape.tag == Solid)
+        dba->blocked = 1; //moved to space
+    else
+        dba->blocked = 0;
     return collision;
 }
 

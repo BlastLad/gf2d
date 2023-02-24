@@ -267,11 +267,12 @@ void level_build_clip_space(Level* level)
     {
         for (i = 0; i < level->mapSize.x; i++)// i is column
         {
-            if (level->tileMap[(j * (int)level->mapSize.x) + i] != 1)continue;//skip zero
-            //shape = gfc_allocate_array(sizeof(Shape), 1);
-            //if (!shape)continue;
-            shape = gfc_shape_rect(i * level->tileSize.x, j * level->tileSize.y, level->tileSize.x, level->tileSize.y);
-            gf2d_space_add_static_shape(level->space, shape);
+            if (level->tileMap[(j * (int)level->mapSize.x) + i] == 1) {
+                //shape = gfc_allocate_array(sizeof(Shape), 1);
+                //if (!shape)continue;
+                shape = gfc_shape_rect(i * level->tileSize.x, j * level->tileSize.y, level->tileSize.x, level->tileSize.y);
+                gf2d_space_add_static_shape(level->space, shape);
+            }
             //gfc_list_append(level->clips, shape);
         }
     }

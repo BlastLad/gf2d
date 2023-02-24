@@ -11,6 +11,7 @@
 #include "camera.h"
 #include "ClipLayers.h"
 #include "Rugby.h"
+#include "Bubbles.h"
 //#include "../gfc/include/gfc_pak.h"
 
 int main(int argc, char * argv[])
@@ -66,6 +67,7 @@ int main(int argc, char * argv[])
 
     playerEntity = piper_entity_new(graph_to_world_pos(7, 6));
     Rugby_New(graph_to_world_pos(7, 9), vector2d(7, 9));
+    Bubbles_New(graph_to_world_pos(12, 8), vector2d(12, 8), vector2d(11, 8));
 
 
     Students = gfc_list_new();
@@ -85,7 +87,8 @@ int main(int argc, char * argv[])
             if (remainingStudents > 0) {
                 //studentSpawnPos = Determine_Spawn_Position();
                 normalStudent = Determine_Student_To_Spawn();// normal_student_new(graph_to_world_pos(studentSpawnPos.x, studentSpawnPos.y), studentSpawnPos.x, studentSpawnPos.y);
-             //   gfc_list_append(Students, normalStudent);
+                gfc_list_append(Students, normalStudent);
+
                 remainingStudents--;
             }
         }

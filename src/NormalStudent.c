@@ -12,6 +12,8 @@ void normal_student_update(Entity* self);
 
 int student_on_collision(DynamicBody* self, List* collision);
 
+int student_on_world_collision(DynamicBody* self, List* collision);
+
 void normal_student_destroy(Entity *self);
 
 Vector2D get_next_tile(int x, int y, int behaviourRule) {
@@ -58,6 +60,7 @@ Entity* normal_student_new(Vector2D position, int gridPositionX, int gridPositio
 	//collision stuff end
 
 	ent->body.touch = student_on_collision;
+	ent->body.worldtouch = student_on_world_collision;
 
 	ent->startFrame = 0;
 	vector2d_copy(ent->position, position);
@@ -87,6 +90,25 @@ void normal_student_update(Entity* self)
 	else if (self->markedForDestruction == 1) {
 		normal_student_destroy(self);
 	}
+}
+
+int student_on_world_collision(DynamicBody* self, List* collision) 
+{
+	int i;
+	Collision* other;
+
+	for (i = 0; i < collision->count; i++)
+	{
+		other = (Collision*)gfc_list_get_nth(collision, i);
+		if (!other) continue;
+		if (other->shape.identifier == Furniture) 
+		{//collider with player
+			self->entityAttached->markedForDestruction = 1;
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 int student_on_collision(DynamicBody* self, List* collision) {

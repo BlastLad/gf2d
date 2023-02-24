@@ -83,13 +83,24 @@ void entity_draw(Entity* ent) {
 		{
 			if (ent->frame < ent->startFrame) ent->frame = ent->startFrame;
 			if (ent->frame > ent->endFrame) ent->frame = ent->startFrame;
-			gf2d_sprite_draw(ent->sprite, ent->body.position, NULL, &ent->drawOffset, NULL, NULL, NULL, (int)ent->frame);
+			if (ent->body.inuse)
+				gf2d_sprite_draw(ent->sprite, ent->body.position, NULL, &ent->drawOffset, NULL, NULL, NULL, (int)ent->frame);
+			else
+			{
+				gf2d_sprite_draw(ent->sprite, ent->position, NULL, &ent->drawOffset, NULL, NULL, NULL, (int)ent->frame);
+			}
 
 		}
 	}
 
+	if (ent->body.inuse)
+		gf2d_draw_circle(ent->body.position, ent->body.shape->s.c.r, gfc_color(255, 0, 0, 255));
+	else
+	{
+		//gf2d_draw_circle(ent->position, ent->shape.s.c.r, gfc_color(255, 0, 0, 255));
+	}
 	//gf2d_draw_pixel(ent->position, GFC_COLOR_YELLOW);
-	gf2d_draw_circle(ent->body.position, ent->body.shape->s.c.r, gfc_color(255,0,0,255));
+
 }
 
 void entity_draw_all() 
@@ -111,7 +122,9 @@ void entity_update(Entity* ent) {
 
 	if (ent->update)ent->update(ent);	
 
-	if (level_shape_clip(level_get_active_level(), entity_get_shape_after_move(ent))) {
+
+	if (level_shape_clip(level_get_active_level(), entity_get_shape_after_move(ent)) == 0) {
+
 
 		return;
 	}

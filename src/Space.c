@@ -551,14 +551,14 @@ void gf2d_space_dynamic_bodies_world_clip(Space* space, DynamicBody* db, float t
             for (i = 0; i < c; i++)
             {
                 shape = (Shape*)gfc_list_get_nth(bucket->staticShapes, i);
-                if (!shape)continue;
+                if (!shape)continue;                
                 // check for layer compatibility
                 collision = gf2d_dynamic_body_shape_collision_check(db, *shape, t);
                 if (collision == NULL)continue;
                 db->collisionList = gfc_list_append(db->collisionList, (void*)collision);
-                slog("Collided with world true");
+                //slog("Collided with world true");
                 if (db->body->worldtouch) {
-                    slog("Collided with world");
+                    //slog("Collided with world");
                     db->body->worldtouch(db, db->collisionList);
 
                 }

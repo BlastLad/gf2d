@@ -18,7 +18,7 @@ Entity* Rugby_New(Vector2D position, Vector2D gridPosition)
 	ent->sprite = gf2d_sprite_load_all("images/Rugby.png",
 		32,
 		32,
-		4,
+		5,
 		0);
 	ent->think = rugby_think;
 	ent->update = rugby_update;
@@ -49,7 +49,6 @@ Entity* Rugby_New(Vector2D position, Vector2D gridPosition)
 	vector2d_copy(ent->targetGridPosition, gridPosition);
 
 	ent->timer = 0;
-	ent->index = 0;
 	ent->markedForDestruction = 0;//false
 
 	return ent;

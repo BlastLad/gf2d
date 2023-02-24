@@ -21,7 +21,8 @@ enum EntityTags
 	Student = 1,
 	Player = 2,
 	Furniture = 3,
-	Projectile = 4
+	Projectile = 4,
+	NonsolidFurniture = 5
 };
 /**
 *@brief the structure of an entity

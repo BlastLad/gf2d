@@ -2,9 +2,21 @@
 #include "Piper.h"
 #include "TileMap.h"
 #include "SleepSpell.h"
+#include "DynamicBody.h"
+
 
 
 void piper_think(Entity* self);
+
+int piper_on_static_collision(DynamicBody* self, List* collision);
+
+
+void SetTagsPlayer(Entity* self) 
+{
+	self->tag = Player;
+	self->shape.tag = Solid;
+	self->shape.identifier = Player;
+}
 
 Entity* piper_entity_new(Vector2D spawnPosition)
 {
@@ -21,15 +33,19 @@ Entity* piper_entity_new(Vector2D spawnPosition)
 	ent->body.inuse = true;
 	ent->drawOffset = vector2d(8, 8);
 	ent->shape = gfc_shape_circle(0, 0, 5);
+	SetTagsPlayer(ent);
+	//ent->tag = Player;
+	//ent->shape.tag = Player;
 	ent->body.shape = &ent->shape;
 	ent->body.worldclip = 1;
 	ent->body.ignore = false;
 	ent->body.cliplayer = 1;
 	ent->body.team = 1;
-	ent->tag = Player;
 
 	vector2d_copy(ent->body.position, spawnPosition);
 	level_add_entity(level_get_active_level(), ent);
+
+	ent->body.worldtouch = piper_on_static_collision;
 
 	vector2d_copy(ent->position, spawnPosition);
 	ent->speed = 4;
@@ -39,6 +55,11 @@ Entity* piper_entity_new(Vector2D spawnPosition)
 }
 
 static int spacebarDown = 0;
+
+int piper_on_static_collision(DynamicBody* self, List* collision) 
+{
+
+}
 
 void piper_think(Entity* self) {
 
