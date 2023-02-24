@@ -28,7 +28,7 @@ Vector2D get_next_tile(int x, int y, int behaviourRule) {
 	return vector2d(get_graph_node(x, y).coordinates.x, get_graph_node(x,y).coordinates.y);
 }
 
-Entity* normal_student_new(Vector2D position, Vector2D gridPosition)
+Entity* normal_student_new(Vector2D position, int gridPositionX, int gridPositionY)
 {
 	//slog("before x %f before y %f", gridPosition.x, gridPosition.y);	
 	Entity* ent;
@@ -62,8 +62,8 @@ Entity* normal_student_new(Vector2D position, Vector2D gridPosition)
 	ent->startFrame = 0;
 	vector2d_copy(ent->position, position);
 	ent->endFrame = 4;
-	vector2d_copy(ent->currentGridPosition, gridPosition);
-	vector2d_copy(ent->targetGridPosition, gridPosition);
+	vector2d_copy(ent->currentGridPosition, vector2d(gridPositionX, gridPositionY));
+	vector2d_copy(ent->targetGridPosition, vector2d(gridPositionX, gridPositionY));
 	//slog("x %f y %f", ent->currentGridPosition.x, ent->currentGridPosition.y);
 	//ent->targetGridPosition = get_next_tile(position.x, position.y, 1);
 

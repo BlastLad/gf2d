@@ -42,13 +42,13 @@ Entity* Rugby_New(Vector2D position, Vector2D gridPosition)
 	level_add_entity(level_get_active_level(), ent);
 	//collision stuff end
 
-	ent->startFrame = 12;
+	ent->startFrame = 13;
 	vector2d_copy(ent->position, position);
-	ent->endFrame = 16;
+	ent->endFrame = 15;
 	vector2d_copy(ent->currentGridPosition, gridPosition);
 	vector2d_copy(ent->targetGridPosition, gridPosition);
 
-
+	ent->timer = 0;
 	ent->index = 0;
 	ent->markedForDestruction = 0;//false
 
@@ -69,7 +69,11 @@ int rugby_on_collision(DynamicBody* self, List* collision) {
 		//slog("Student collided %i", self->entityAttached->tag);
 		if (other->collisionTag == Player && self->entityAttached->markedForDestruction == 0) {//collider with player
 			self->entityAttached->body.team = 2;
+		
+			self->entityAttached->startFrame = 3;
+			self->entityAttached->endFrame = 7;
 			self->entityAttached->markedForDestruction = 1;
+			self->entityAttached->timer = 0;
 			//slog("Student collided %i", self->entityAttached->body.cliplayer);
 			return 1;
 		}
@@ -84,7 +88,19 @@ void Rugby_remove_from_list(List* rugby_list, Entity* self)
 
 void rugby_update(Entity* self)
 {
+	if (self->markedForDestruction == 1) 
+	{
+		self->timer += 0.1;
+		if (self->timer >= 64.0) {
 
+		
+			self->body.team = 3;
+			self->timer = 0;
+			self->startFrame = 13;
+			self->endFrame = 15;
+			self->markedForDestruction = 0;
+		}
+	}
 }
 
 

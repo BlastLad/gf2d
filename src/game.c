@@ -5,6 +5,7 @@
 #include "../gfc/include/gfc_input.h"
 #include "Entity.h"
 #include "piper.h"
+#include "StudentManager.h"
 #include "NormalStudent.h"
 #include "TileMap.h"
 #include "camera.h"
@@ -68,7 +69,6 @@ int main(int argc, char * argv[])
 
 
     Students = gfc_list_new();
-
     /*main game loop*/
     while(!done)
     {
@@ -83,7 +83,8 @@ int main(int argc, char * argv[])
 
             mf = 0;
             if (remainingStudents > 0) {
-                normalStudent = normal_student_new(graph_to_world_pos(7, 1), vector2d(7, 1));               
+                //studentSpawnPos = Determine_Spawn_Position();
+                normalStudent = Determine_Student_To_Spawn();// normal_student_new(graph_to_world_pos(studentSpawnPos.x, studentSpawnPos.y), studentSpawnPos.x, studentSpawnPos.y);
              //   gfc_list_append(Students, normalStudent);
                 remainingStudents--;
             }

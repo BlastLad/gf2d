@@ -55,7 +55,7 @@ typedef struct Entity_S {
 	int markedForDestruction;
 
 	float speed;
-
+	float timer;
 	void (*think)(struct Entity_S* self);
 	void (*update)(struct Entity_S* self);
 	void* data;//unique data

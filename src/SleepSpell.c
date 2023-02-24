@@ -90,6 +90,9 @@ int sleep_spell_collision(DynamicBody* self, List* collision)
 				{					
 					ent->markedForDestruction = 1;
 					self->entityAttached->markedForDestruction = 1;
+
+					ent->startFrame = 3;
+					ent->endFrame = 7;
 				}
 			}
 			//slog("Student collided %i", self->entityAttached->body.cliplayer);

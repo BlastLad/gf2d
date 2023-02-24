@@ -74,6 +74,8 @@ void piper_think(Entity* self) {
 	if (keys[SDL_SCANCODE_SPACE] && spacebarDown == 0) 
 	{
 		spacebarDown = 1;
+		if (dir.x == 0 && dir.y == 0)
+			dir.y += 1;
 		sleep_spell_new(self->position, self, dir);
 
 	}
