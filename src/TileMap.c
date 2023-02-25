@@ -179,11 +179,11 @@ Level* level_load(const char* filename)
         {
             
             if (i > 0) {
-                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[0] = &graph_manager.graph[((i - 1) * (int)level->mapSize.x) + j];
+                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[2] = &graph_manager.graph[((i - 1) * (int)level->mapSize.x) + j];
             }
 
             if (i < c - 1) {
-                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[2] = &graph_manager.graph[((i + 1) * (int)level->mapSize.x) + j];
+                graph_manager.graph[(i * (int)level->mapSize.x) + j].neighbours[0] = &graph_manager.graph[((i + 1) * (int)level->mapSize.x) + j];
             }
 
             if (j > 0) {
@@ -344,6 +344,8 @@ void level_build(Level* level)
 void get_next_carpet_tile(float x, float y, Entity *ent) 
 {    
     int j;
+    Vector2D vectorToReturn;
+    vectorToReturn = vector2d(x, y);
     for (j = 0; j < 4; j++) 
     {
        
@@ -352,7 +354,7 @@ void get_next_carpet_tile(float x, float y, Entity *ent)
             TileInfo* currentNeighbour;
             currentNeighbour = get_graph_node(ent->targetGridPosition.x, ent->targetGridPosition.y).neighbours[j];
         
-            if (currentNeighbour->tileFrame == 2) //is carpet
+            if (currentNeighbour->tileFrame >= 2 && currentNeighbour->tileFrame <= 12) //is carpet
             {
                 if (currentNeighbour->coordinates.x != x || currentNeighbour->coordinates.y != y) {//if the currentNeighbour of the target is not the units current position
                     if (ent->index == 0) //straight mover
@@ -361,6 +363,7 @@ void get_next_carpet_tile(float x, float y, Entity *ent)
                             if (currentNeighbour->coordinates.x == ent->currentGridPosition.x) 
                             {
                                 vector2d_copy(ent->targetGridPosition, currentNeighbour->coordinates);//copy 
+                                return;
                             }
                         }
                         else if (ent->currentGridPosition.y == ent->targetGridPosition.y)//moving straight horizontally
@@ -368,18 +371,37 @@ void get_next_carpet_tile(float x, float y, Entity *ent)
                             if (currentNeighbour->coordinates.y == ent->currentGridPosition.y)
                             {
                                 vector2d_copy(ent->targetGridPosition, currentNeighbour->coordinates);//copy 
+                                return;
                             }
                         }
                     }
-                    else if (ent->index == 1) {
-                        vector2d_copy(ent->targetGridPosition, currentNeighbour->coordinates);//copy 
-                        return;
-                    }
-          
-                    
+                    else if (ent->index == 1) 
+                    {
+                   
+
+                            int currenttileFrame;
+                            currenttileFrame = get_graph_node(ent->currentGridPosition.x, ent->currentGridPosition.y).tileFrame;//example 2 before t tile
+
+                            if (currenttileFrame == currentNeighbour->tileFrame) //this would be the 2 after the t piece
+                            {
+                                vectorToReturn = currentNeighbour->coordinates;
+                           
+                            }
+                            else {
+                                vectorToReturn = currentNeighbour->coordinates;//copy
+                                break;
+                            }
+                        }
+                                                  
                 }
             }
         }
+    }
+
+
+    if (ent->index == 1) 
+    {
+        vector2d_copy(ent->targetGridPosition, vectorToReturn);//copy but dont return
     }
 }
 

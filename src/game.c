@@ -69,7 +69,7 @@ int main(int argc, char * argv[])
     playerEntity = piper_entity_new(graph_to_world_pos(7, 6));
     Rugby_New(graph_to_world_pos(7, 9), vector2d(7, 9));
     Bubbles_New(graph_to_world_pos(12, 8), vector2d(12, 8), vector2d(11, 8));
-    Bubbles_New(graph_to_world_pos(14, 8), vector2d(14, 8), vector2d(15, 8));
+   // Bubbles_New(graph_to_world_pos(14, 8), vector2d(14, 8), vector2d(15, 8));
     karter_new(graph_to_world_pos(6, 6), 6, 6, 15, 6);
 
 

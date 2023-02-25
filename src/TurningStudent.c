@@ -6,44 +6,31 @@
 #include "TileMap.h"
 
 
-void normal_student_think(Entity *self);
+void turning_student_think(Entity* self);
 
-void normal_student_update(Entity* self);
+void turning_student_update(Entity* self);
 
-int student_on_collision(DynamicBody* self, List* collision);
+int turning_on_collision(DynamicBody* self, List* collision);
 
-int student_on_world_collision(DynamicBody* self, List* collision);
+int turning_on_world_collision(DynamicBody* self, List* collision);
 
-void normal_student_destroy(Entity *self);
+void turning_student_destroy(Entity* self);
 
-Vector2D get_next_tile(int x, int y, int behaviourRule) {
-	slog("before i");
-	int i;
-	slog("Broke he");
-	for (int i = 0; i < 4; i++) {
-		slog("Broke here");
-		if (gfc_list_get_nth(get_graph_node(x, y).neighbours, i)) {
-			slog("Broke there");
-		}
-	}
 
-	return vector2d(get_graph_node(x, y).coordinates.x, get_graph_node(x,y).coordinates.y);
-}
-
-Entity* normal_student_new(Vector2D position, int gridPositionX, int gridPositionY)
+Entity* turning_student_new(Vector2D position, int gridPositionX, int gridPositionY)
 {
 	//slog("before x %f before y %f", gridPosition.x, gridPosition.y);	
 	Entity* ent;
 	ent = entity_new();
 	if (!ent)return NULL;
-	ent->sprite = gf2d_sprite_load_all("images/BeWitched!FemaleStudentWalk.png",
-		32,
-		32,
-		4,
+	ent->sprite = gf2d_sprite_load_all("images/MaleStudentWalk.png",
+		16,
+		16,
+		5,
 		0);
-	ent->think = normal_student_think;
-	ent->update = normal_student_update;
-	ent->drawOffset = vector2d(16, 16);
+	ent->think = turning_student_think;
+	ent->update = turning_student_update;
+	ent->drawOffset = vector2d(8, 8);
 	ent->speed = .5;
 
 	//collion stuff
@@ -54,33 +41,29 @@ Entity* normal_student_new(Vector2D position, int gridPositionX, int gridPositio
 	ent->body.ignore = false;
 	ent->body.cliplayer = 2;
 	ent->body.team = 2;
-	ent->tag = Student;	
+	ent->tag = Student;
 	vector2d_copy(ent->body.position, position);
-	level_add_entity(level_get_active_level(),ent);
+	level_add_entity(level_get_active_level(), ent);
 	//collision stuff end
 
-	ent->body.touch = student_on_collision;
-	ent->body.worldtouch = student_on_world_collision;
+	ent->body.touch = turning_on_collision;
+	ent->body.worldtouch = turning_on_world_collision;
 
-	ent->startFrame = 0;
+	ent->startFrame = 9;
 	vector2d_copy(ent->position, position);
-	ent->endFrame = 4;
+	ent->endFrame = 12;
 	vector2d_copy(ent->currentGridPosition, vector2d(gridPositionX, gridPositionY));
 	vector2d_copy(ent->originPosition, vector2d(gridPositionX, gridPositionY));
 	vector2d_copy(ent->targetGridPosition, vector2d(gridPositionX, gridPositionY));
-	//slog("x %f y %f", ent->currentGridPosition.x, ent->currentGridPosition.y);
-	//ent->targetGridPosition = get_next_tile(position.x, position.y, 1);
 
-	//ent->targetGridPosition =  get_next_tile(position.x, position.y, 1);//ent->currentGridPosition->neighbours[1]; 
-	//ent->currentGridPosition->neighbours[0];
-	ent->index = 0;
+	ent->index = 1;
 	ent->markedForDestruction = 0;//false
-	
+
 	return ent;
 }
 
 
-void normal_student_update(Entity* self) 
+void turning_student_update(Entity* self)
 {
 	//slog("Marked");
 	if (self->currentGridPosition.y >= 11.0 && self->markedForDestruction == 0) {
@@ -93,7 +76,7 @@ void normal_student_update(Entity* self)
 	}
 }
 
-int student_on_world_collision(DynamicBody* self, List* collision) 
+int turning_on_world_collision(DynamicBody* self, List* collision)
 {
 	int i;
 	Collision* other;
@@ -102,7 +85,7 @@ int student_on_world_collision(DynamicBody* self, List* collision)
 	{
 		other = (Collision*)gfc_list_get_nth(collision, i);
 		if (!other) continue;
-		if (other->shape.identifier == Furniture) 
+		if (other->shape.identifier == Furniture)
 		{//collider with player
 			self->entityAttached->markedForDestruction = 1;
 			return 1;
@@ -112,13 +95,13 @@ int student_on_world_collision(DynamicBody* self, List* collision)
 	return 0;
 }
 
-int student_on_collision(DynamicBody* self, List* collision) {
+int turning_on_collision(DynamicBody* self, List* collision) {
 	int i, selfIndex;
 	Collision* other;
 
-	
+
 	for (i = 0; i < collision->count; i++)
-	{		
+	{
 		other = (Collision*)gfc_list_get_nth(collision, i);
 		if (!other) continue;
 		//
@@ -134,7 +117,7 @@ int student_on_collision(DynamicBody* self, List* collision) {
 	return 0;
 }
 
-void normal_student_think(Entity* self) {
+void turning_student_think(Entity* self) {
 	Vector2D dir;
 	dir = self->direction;
 	if (!self) return;
@@ -142,7 +125,7 @@ void normal_student_think(Entity* self) {
 
 	float mag;
 
-	mag = vector2d_magnitude_between(graph_to_world_pos(self->targetGridPosition.x, self->targetGridPosition.y), 
+	mag = vector2d_magnitude_between(graph_to_world_pos(self->targetGridPosition.x, self->targetGridPosition.y),
 		graph_to_world_pos(self->currentGridPosition.x, self->currentGridPosition.y));
 
 
@@ -156,7 +139,7 @@ void normal_student_think(Entity* self) {
 
 	}
 
-	vector2d_sub(dir, graph_to_world_pos(self->targetGridPosition.x, self->targetGridPosition.y), 
+	vector2d_sub(dir, graph_to_world_pos(self->targetGridPosition.x, self->targetGridPosition.y),
 		graph_to_world_pos(self->currentGridPosition.x, self->currentGridPosition.y));
 
 	//dir.y += 1;
@@ -164,7 +147,7 @@ void normal_student_think(Entity* self) {
 	vector2d_set_magnitude(&dir, self->speed);
 	vector2d_copy(self->body.velocity, dir);
 	vector2d_copy(self->velocity, dir);
-	
+
 	vector2d_copy(self->position, self->body.position);
 
 	//vector2d_copy(pos, dir);
@@ -172,12 +155,12 @@ void normal_student_think(Entity* self) {
 
 }
 
-void normal_student_destroy(Entity* self) {
+void turning_student_destroy(Entity* self) {
 	level_remove_entity(self);
 	entity_free(self);
 }
 
-void normal_student_remove_from_list(List *student_list, Entity* self) 
+void turning_student_remove_from_list(List* student_list, Entity* self)
 {
 	gfc_list_delete_data(student_list, self);
 	level_remove_entity(self);

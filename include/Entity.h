@@ -53,6 +53,7 @@ typedef struct Entity_S {
 	Vector2D direction;
 	Vector2D currentGridPosition;
 	Vector2D targetGridPosition;
+	Vector2D originPosition;
 
 	int markedForDestruction;
 

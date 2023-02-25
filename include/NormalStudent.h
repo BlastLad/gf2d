@@ -10,6 +10,7 @@
  * @return NULL on failure, or a pointer to the new bug
  */
 Entity* normal_student_new(Vector2D position, int gridPositionX, int gridPositionY);
+Entity* turning_student_new(Vector2D position, int gridPositionX, int gridPositionY);
 
 
 
