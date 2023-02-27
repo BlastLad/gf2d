@@ -23,7 +23,8 @@ enum EntityTags
 	Furniture = 3,
 	Projectile = 4,
 	NonsolidFurniture = 5,
-	Blank = 6
+	Blank = 6,
+	PlayerHazard = 7
 };
 /**
 *@brief the structure of an entity
@@ -56,6 +57,7 @@ typedef struct Entity_S {
 	Vector2D originPosition;
 
 	int markedForDestruction;
+	int counter;
 
 	float speed;
 	float timer;

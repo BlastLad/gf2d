@@ -11,6 +11,8 @@
  */
 Entity* normal_student_new(Vector2D position, int gridPositionX, int gridPositionY);
 Entity* turning_student_new(Vector2D position, int gridPositionX, int gridPositionY);
+Entity* distracted_student_new(Vector2D position, int gridPositionX, int gridPositionY, int index);
+Entity* lost_student_new(Vector2D position, int gridPositionX, int gridPositionY, int targetGridX, int targetGridY, int index);
 
 
 

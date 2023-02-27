@@ -115,6 +115,8 @@ void bubbles_update(Entity* self)
 		}
 
 		self->timer += 0.1;
+		if (self->index == 1)//currentlyy locked down
+			return;
 		if (self->timer >= 64.0) {
 
 			if (bbe) 

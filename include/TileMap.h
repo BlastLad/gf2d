@@ -44,8 +44,12 @@ TileInfo get_graph_node(int x, int y);
 
 void get_next_carpet_tile(float x, float y, Entity* ent);
 
+void get_next_previous_tile(float x, float y, Entity* ent);
+
 Vector2D graph_to_world_pos(int x, int y);
 
+
+TileInfo Get_Random_GridNode();
 /**
  * @brief get the set active level pointer if it is set
  * @return NULL if no active level, or a pointer to it

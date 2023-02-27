@@ -13,7 +13,11 @@
 #include "Rugby.h"
 #include "Bubbles.h"
 #include "Karter.h"
+#include "WaterSpill.h"
 //#include "../gfc/include/gfc_pak.h"
+
+
+void SpawnHazard();
 
 int main(int argc, char * argv[])
 {
@@ -69,7 +73,7 @@ int main(int argc, char * argv[])
     playerEntity = piper_entity_new(graph_to_world_pos(7, 6));
     Rugby_New(graph_to_world_pos(7, 9), vector2d(7, 9));
     Bubbles_New(graph_to_world_pos(12, 8), vector2d(12, 8), vector2d(11, 8));
-   // Bubbles_New(graph_to_world_pos(14, 8), vector2d(14, 8), vector2d(15, 8));
+    Bubbles_New(graph_to_world_pos(14, 8), vector2d(14, 8), vector2d(15, 8));
     karter_new(graph_to_world_pos(6, 6), 6, 6, 15, 6);
 
 
@@ -93,6 +97,8 @@ int main(int argc, char * argv[])
                 gfc_list_append(Students, normalStudent);
 
                 remainingStudents--;
+
+                SpawnHazard();
             }
         }
 
@@ -141,4 +147,13 @@ int main(int argc, char * argv[])
     slog("---==== END ====---");
     return 0;
 }
+
+
+void SpawnHazard() 
+{
+    TileInfo randomTile;
+    randomTile = Get_Random_GridNode();
+    Water_Spill_New(graph_to_world_pos(randomTile.coordinates.x, randomTile.coordinates.y), vector2d(randomTile.coordinates.x, randomTile.coordinates.y));
+}
+
 /*eol@eof*/
