@@ -13,15 +13,16 @@ void piper_update(Entity* self);
 
 int piper_on_static_collision(DynamicBody* self, List* collision);
 
-typedef struct
-{
-	int sleepUpgrade;
-	int mixingUpgrade;
-}PiperData;
+
 
 static PiperData piperData = {
 	false, //sleepUpgrade
-	false
+	false,
+	3,
+	3,
+	0,
+	0,
+	1
 };
 
 

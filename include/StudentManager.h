@@ -9,7 +9,7 @@
 
 Vector2D Determine_Spawn_Position();
 
-Entity* Determine_Student_To_Spawn();
+Entity* Determine_Student_To_Spawn(int remainingStudents, Entity* playerEnt);
 
 
 

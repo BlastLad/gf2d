@@ -1,4 +1,5 @@
 #include "StudentManager.h"
+#include "UniversalData.h"
 #include "TileMap.h"
 Vector2D Determine_Spawn_Position() 
 {
@@ -12,10 +13,24 @@ Vector2D Determine_Spawn_Position()
 	}
 }
 
+static int localStudentCounter = 0;
 
-Entity* Determine_Student_To_Spawn() {
+Entity* Determine_Student_To_Spawn(int remainingStudents, Entity* playerEnt) {
 	float randNum;
 	randNum = gfc_random();
+
+	//if (get_current_level_num() > 5) 
+	//{
+		//return nervous_student_new(graph_to_world_pos(7, 1), 7, 1, playerEnt);
+	//}
+
+	localStudentCounter += 1;
+
+	if (localStudentCounter > 7 && remainingStudents > 3) {
+		localStudentCounter = 0;
+		return nervous_student_new(graph_to_world_pos(7, 1), 7, 1, playerEnt);
+	}
+
 
 	if (randNum > 0.75) {
 		randNum = gfc_random();

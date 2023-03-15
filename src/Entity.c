@@ -94,7 +94,7 @@ void entity_draw(Entity* ent) {
 	}
 
 	if (ent->body.inuse)
-		gf2d_draw_circle(ent->body.position, ent->body.shape->s.c.r, gfc_color(255, 0, 0, 255));
+		gf2d_draw_circle(ent->body.position, ent->body.shape->s.c.r, gfc_color(255, 0, 0, 255));//		gfc_shape_rect() gf2d_draw_rect_filled()
 	else
 	{
 		//gf2d_draw_circle(ent->position, ent->shape.s.c.r, gfc_color(255, 0, 0, 255));

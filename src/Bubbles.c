@@ -32,7 +32,7 @@ typedef struct
 }BubbleEatBox;
 
 
-Entity* Bubbles_New(Vector2D position, Vector2D gridPosition, Vector2D attackTargetGridPosition) 
+Entity* Bubbles_New(Vector2D position, Vector2D gridPosition, Vector2D attackTargetGridPosition)
 {
 	//entity init
 	Entity* ent;
@@ -42,7 +42,7 @@ Entity* Bubbles_New(Vector2D position, Vector2D gridPosition, Vector2D attackTar
 	bubbleEatBox.boxShape.tag = Trigger;
 	bubbleEatBox.boxShape.identifier = Furniture;
 	bubbleEatBox.parent = ent;
-	
+
 	slog("1");
 	if (!ent)return NULL;
 	ent->sprite = gf2d_sprite_load_all("images/BubblesWithHandles.png",
@@ -95,15 +95,15 @@ void bubbles_think(Entity* self) {
 
 }
 
-void bubbles_update(Entity* self) 
+void bubbles_update(Entity* self)
 {
 	if (self->markedForDestruction == 1)
 	{
 		BubbleEatBox* bbe;
 		bbe = (struct BubbleEatBox*)self->data;
-		if (self->timer == 0) 
+		if (self->timer == 0)
 		{
-	
+
 			if (bbe)
 			{
 				slog("here");
@@ -119,7 +119,7 @@ void bubbles_update(Entity* self)
 			return;
 		if (self->timer >= 64.0) {
 
-			if (bbe) 
+			if (bbe)
 			{
 				bbe->boxShape.identifier = Furniture;
 				bbe->parent = self;
