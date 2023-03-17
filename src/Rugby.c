@@ -69,12 +69,12 @@ int rugby_on_collision(DynamicBody* self, List* collision) {
 		
 		//slog("Student collided %i", self->entityAttached->tag);
 		if (other->collisionTag == Player && self->entityAttached->markedForDestruction == 0) {//collider with player
-			self->entityAttached->body.team = 2;
+			//self->entityAttached->body.team = 2;
 		
-			self->entityAttached->startFrame = 3;
-			self->entityAttached->endFrame = 7;
-			self->entityAttached->markedForDestruction = 1;
-			self->entityAttached->timer = 0;
+			//self->entityAttached->startFrame = 3;
+			//self->entityAttached->endFrame = 7;
+			//self->entityAttached->markedForDestruction = 0;
+			//self->entityAttached->timer = 0;
 			//slog("Student collided %i", self->entityAttached->body.cliplayer);
 			return 1;
 		}
