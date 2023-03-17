@@ -33,7 +33,9 @@ int main(int argc, char * argv[])
     //NEW
     Entity *playerEntity;//make it pointer probs for all this shit
     List *Students;
+    List *AllFurnitureList;
     Entity* normalStudent;
+    Entity* furnitureItem;
     Entity* entityCreator;
 
 
@@ -73,11 +75,18 @@ int main(int argc, char * argv[])
 
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
 
+
+    AllFurnitureList = gfc_list_new();
+
     playerEntity = piper_entity_new(graph_to_world_pos(7, 6));
-    Rugby_New(graph_to_world_pos(7, 9), vector2d(7, 9));
-    Bubbles_New(graph_to_world_pos(12, 8), vector2d(12, 8), vector2d(11, 8));
-    Bubbles_New(graph_to_world_pos(14, 8), vector2d(14, 8), vector2d(15, 8));
-    karter_new(graph_to_world_pos(6, 6), 6, 6, 15, 6);
+    furnitureItem = Rugby_New(graph_to_world_pos(7, 9), vector2d(7, 9));
+    gfc_list_append(AllFurnitureList, furnitureItem);
+    furnitureItem = Bubbles_New(graph_to_world_pos(12, 8), vector2d(12, 8), vector2d(11, 8));
+    gfc_list_append(AllFurnitureList, furnitureItem);
+    furnitureItem = Bubbles_New(graph_to_world_pos(14, 8), vector2d(14, 8), vector2d(15, 8));
+    gfc_list_append(AllFurnitureList, furnitureItem);
+    furnitureItem = karter_new(graph_to_world_pos(6, 6), 6, 6, 15, 6);
+    gfc_list_append(AllFurnitureList, furnitureItem);
 
     PiperData* piperDataPointer;
 
@@ -86,6 +95,7 @@ int main(int argc, char * argv[])
     gui_setup_hud(piperDataPointer, get_current_level_remainingStudents);
 
     Students = gfc_list_new();
+
     /*main game loop*/
     while(!done)
     {
@@ -123,9 +133,31 @@ int main(int argc, char * argv[])
                 }
             }
         }*/
+        int useSpell  = 0;
+        if (keys[SDL_SCANCODE_TAB] && piperDataPointer->currentSpellBooks > 0) 
+        {
+            piperDataPointer->currentSpellBooks -= 1;
+            useSpell = 1;
 
-        
+        }// exit condition
 
+        if (AllFurnitureList->count > 0) {
+            for (indexer = AllFurnitureList->count - 1; indexer >= 0; indexer--) {
+                furnitureItem = gfc_list_get_nth(AllFurnitureList, indexer);
+                if (!furnitureItem)continue;
+
+                if (useSpell == 1)
+                {
+                    furnitureItem->markedForDestruction = 1;
+                }
+
+                if (furnitureItem->markedForDestruction > 0)
+                {
+                    furnitureItem->markedForDestruction = 1;
+                    //normal_student_remove_from_list(Students, normalStudent);
+                }
+            }
+        }
 
         
         gf2d_graphics_clear_screen();// clears drawing buffers

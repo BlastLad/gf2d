@@ -79,6 +79,9 @@ void karter_update(Entity* self)
 		vector2d_copy(self->velocity, dir);
 
 		vector2d_copy(self->position, self->body.position);
+		self->body.team = 2;
+		self->startFrame = 4;
+		self->endFrame = 6;
 
 		self->timer += 0.1;
 		if (self->timer >= 64.0) {

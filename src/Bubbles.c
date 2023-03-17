@@ -99,6 +99,8 @@ void bubbles_update(Entity* self)
 {
 	if (self->markedForDestruction == 1)
 	{
+		self->startFrame = 0;
+		self->endFrame = 2;
 		BubbleEatBox* bbe;
 		bbe = (struct BubbleEatBox*)self->data;
 		if (self->timer == 0)

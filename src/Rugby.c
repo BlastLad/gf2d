@@ -92,6 +92,9 @@ void rugby_update(Entity* self)
 	if (self->markedForDestruction == 1) 
 	{
 		self->timer += 0.1;
+		self->startFrame = 3;
+		self->endFrame = 7;
+		self->body.team = 2;
 		if (self->timer >= 64.0) {
 
 		

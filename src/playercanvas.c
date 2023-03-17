@@ -109,11 +109,26 @@ void gui_draw_hud(PiperData* piperData, int RemainingStudents)
              0);
          startinghealthFragUI += 32;
      }
+     
+     int startingBook;
+     startingBook = 496;
+     for (i = 0; i < piperData->currentSpellBooks; i++) {
+         gf2d_sprite_draw(
+             gui.speelbookUI,
+             vector2d(startingBook, 384),
+             NULL,
+             NULL,
+             NULL,
+             NULL,
+             NULL,
+             0);
+         startingBook += 32;
+     }
 
 
 
      gf2d_sprite_draw(gui.headUI, vector2d(400, 384), NULL, NULL, NULL, NULL, NULL, 0);
-     gf2d_sprite_draw(gui.speelbookUI, vector2d(496, 384), NULL, NULL, NULL, NULL, NULL, 0);
+     //gf2d_sprite_draw(gui.speelbookUI, vector2d(496, 384), NULL, NULL, NULL, NULL, NULL, 0);
 
      if (piperData->sleepUpgrade) gf2d_sprite_draw(gui.dualCastUI, vector2d(32, 400), NULL, NULL, NULL, NULL, NULL, 0);
      if (piperData->mixingUpgrade) gf2d_sprite_draw(gui.lockDownWithUpgradeUI, vector2d(64, 400), NULL, NULL, NULL, NULL, NULL, 0);
