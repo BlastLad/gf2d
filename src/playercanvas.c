@@ -4,6 +4,7 @@
 #include "gf2d_sprite.h"
 #include "simple_logger.h"
 #include "gfc_text.h"
+#include "UniversalData.h"
 
 typedef struct
 {
@@ -59,7 +60,7 @@ void gui_draw_percent_bar_horizontal(Rect rect, float percent, Vector4D fgColor,
     gf2d_draw_rect_filled(rect, colorBack);
        
 
-    gf2d_draw_rect_filled(gfc_rect(32, 16, 150 * percent, 10), colorFront);
+    gf2d_draw_rect_filled(gfc_rect(rect.x, rect.y, 150 * percent, rect.h), colorFront);
 }
 
 void gui_draw_percent_bar_vertical(Rect rect, float percent, Vector4D fgColor, Vector4D bgColor, int top)
@@ -92,15 +93,17 @@ void gui_draw_hud(PiperData* piperData, int RemainingStudents)
         &color,
         0);
     float currentHealthPercent = gui.currentHealth / gui.maxHp;
-
+    float currentStudentPercent = (float)get_current_level_remainingStudents() / (float)get_current_level_totalStudents();
+    slog("current student percent %f", currentStudentPercent);
      gui_draw_percent_bar_horizontal(gfc_rect(32, 16, 150, 10), currentHealthPercent, vector4d(255, 0, 0, 255), vector4d(128, 0, 0, 128), 0);
+     gui_draw_percent_bar_horizontal(gfc_rect(432, 400, 150, 10), currentStudentPercent, vector4d(0, 0, 255, 255), vector4d(128, 0, 0, 128), 0);
      int i;
      int startinghealthFragUI;
      startinghealthFragUI = 384;
      for (i = 0; i < piperData->currentHealthFragments; i++) {
          gf2d_sprite_draw(
              gui.healthFragmentUI,
-             vector2d(startinghealthFragUI, 16),
+             vector2d(startinghealthFragUI, 0),
              NULL,
              NULL,
              NULL,
@@ -111,7 +114,7 @@ void gui_draw_hud(PiperData* piperData, int RemainingStudents)
      }
      
      int startingBook;
-     startingBook = 496;
+     startingBook = 610;
      for (i = 0; i < piperData->currentSpellBooks; i++) {
          gf2d_sprite_draw(
              gui.speelbookUI,
@@ -130,7 +133,7 @@ void gui_draw_hud(PiperData* piperData, int RemainingStudents)
      gf2d_sprite_draw(gui.headUI, vector2d(400, 384), NULL, NULL, NULL, NULL, NULL, 0);
      //gf2d_sprite_draw(gui.speelbookUI, vector2d(496, 384), NULL, NULL, NULL, NULL, NULL, 0);
 
-     if (piperData->sleepUpgrade) gf2d_sprite_draw(gui.dualCastUI, vector2d(32, 400), NULL, NULL, NULL, NULL, NULL, 0);
+     if (piperData->sleepUpgrade) gf2d_sprite_draw(gui.dualCastUI, vector2d(32, 366), NULL, NULL, NULL, NULL, NULL, 0);
      if (piperData->mixingUpgrade) gf2d_sprite_draw(gui.lockDownWithUpgradeUI, vector2d(64, 400), NULL, NULL, NULL, NULL, NULL, 0);
 
    // gui_draw_percent_bar_horizontal(gfc_rect(640, 680, 145, 10), gui.shieldPercent, vector4d(0, 0, 255, 255), vector4d(128, 0, 0, 128), 1);

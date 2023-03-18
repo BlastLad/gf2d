@@ -3,6 +3,7 @@
 
 #include "gfc_vector.h"
 #include "entity.h"
+#include "UniversalData.h"
 
 /**
  * @brief spawn a new normal student at the given location

@@ -11,11 +11,14 @@ typedef struct
 {
 	int sleepUpgrade;
 	int mixingUpgrade;
+	int mixAbility;
 	int currentHealth;
 	int maxHealth;
 	int currentHealthFragments;
 	int currentSpellBooks;
 	int maxSpellBooks;
+	float timeSpedUp;
+	int shadowClone;
 }PiperData;
 
 

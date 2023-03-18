@@ -156,6 +156,7 @@ void turning_student_think(Entity* self) {
 }
 
 void turning_student_destroy(Entity* self) {
+	set_current_level_remainingStudents(get_current_level_remainingStudents() - 1);
 	level_remove_entity(self);
 	entity_free(self);
 }

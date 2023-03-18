@@ -5,7 +5,7 @@
 #include "MixingSpell.h"
 #include "DynamicBody.h"
 #include "ShadowClone.h"
-
+#include "UniversalData.h"
 
 
 void piper_think(Entity* self);
@@ -23,7 +23,9 @@ static PiperData piperData = {
 	3,
 	0,
 	1,
-	1
+	1,
+	0,
+	0
 };
 
 
@@ -51,6 +53,7 @@ Entity* piper_entity_new(Vector2D spawnPosition)
 	ent->body.entityAttached = ent;
 	ent->drawOffset = vector2d(8, 8);
 	ent->shape = gfc_shape_circle(0, 0, 5);
+	ent->uniqueEntityTypeID = 1;
 	SetTagsPlayer(ent);
 	//ent->tag = Player;
 	//ent->shape.tag = Player;
@@ -66,7 +69,7 @@ Entity* piper_entity_new(Vector2D spawnPosition)
 	ent->body.worldtouch = piper_on_static_collision;
 
 	vector2d_copy(ent->position, spawnPosition);
-	ent->speed = 4;
+	ent->speed = 2;
 	ent->markedForDestruction = 0;
 	ent->data = (void*)&piperData;
 	ent->counter = 0;
@@ -99,6 +102,17 @@ void piper_update(Entity* self)
 		}
 	}
 
+
+	slog("speed %f",self->speed);
+	if (self->speed > 2) {
+		piperData.timeSpedUp += 0.1;
+		if (piperData.timeSpedUp > 30.0) {
+			self->speed = 2;
+			piperData.timeSpedUp = 0.0;
+		}
+	}
+
+
 	if (self->counter >= 1) 
 	{
 		self->counter += 1;
@@ -126,22 +140,26 @@ void SleepSpellCast(Vector2D direction, Entity* ent)
 
 void MixingSpellCast(Vector2D direction, Entity* ent) 
 {
-	if (direction.x == 0 && direction.y == 0)
-		direction.y += 1;
-	mixing_spell_new(ent->position, ent, direction);
-
-	if (piperData.mixingUpgrade == true)
-	{
-		vector2d_negate(direction, direction);
+	if (piperData.mixAbility == 1) {
+		if (direction.x == 0 && direction.y == 0)
+			direction.y += 1;
 		mixing_spell_new(ent->position, ent, direction);
+
+		if (piperData.mixingUpgrade == true)
+		{
+			vector2d_negate(direction, direction);
+			mixing_spell_new(ent->position, ent, direction);
+		}
 	}
 }
 
 void ShadowClone(Entity* self) 
 {
-	shadow_clone_entity_new(self->position);
-	self->counter = 1;
-	shadowSpawned = 1;
+	if (piperData.shadowClone) {
+		shadow_clone_entity_new(self->position);
+		self->counter = 1;
+		shadowSpawned = 1;
+	}
 }
 
 
@@ -229,6 +247,7 @@ void piper_think(Entity* self) {
 	}
 
 	vector2d_normalize(&dir);
+	vector2d_set_magnitude(&dir, self->speed);
 	vector2d_copy(self->body.velocity, dir);
 
     vector2d_copy(self->position, self->body.position);

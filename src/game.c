@@ -16,6 +16,7 @@
 #include "WaterSpill.h"
 #include "UniversalData.h"
 #include "gui.h"
+#include "Upgrades.h"
 //#include "../gfc/include/gfc_pak.h"
 
 
@@ -95,7 +96,7 @@ int main(int argc, char * argv[])
     gui_setup_hud(piperDataPointer, get_current_level_remainingStudents);
 
     Students = gfc_list_new();
-
+    int numOfStudents = get_current_level_totalStudents();
     /*main game loop*/
     while(!done)
     {
@@ -109,12 +110,12 @@ int main(int argc, char * argv[])
         if (mf >= 16.0) {
 
             mf = 0;
-            if (get_current_level_remainingStudents() > 0) {
+            if (numOfStudents > 0) {
                 //studentSpawnPos = Determine_Spawn_Position();
                 normalStudent = Determine_Student_To_Spawn(get_current_level_remainingStudents(), playerEntity);// normal_student_new(graph_to_world_pos(studentSpawnPos.x, studentSpawnPos.y), studentSpawnPos.x, studentSpawnPos.y);
                 gfc_list_append(Students, normalStudent);
 
-                set_current_level_remainingStudents(get_current_level_remainingStudents() - 1);
+                numOfStudents--;
 
                 SpawnHazard();
             }
@@ -186,7 +187,7 @@ void SpawnHazard()
 {
     TileInfo randomTile;
     randomTile = Get_Random_GridNode();
-    Water_Spill_New(graph_to_world_pos(randomTile.coordinates.x, randomTile.coordinates.y), vector2d(randomTile.coordinates.x, randomTile.coordinates.y));
+    Mix_Upgrade_New(graph_to_world_pos(randomTile.coordinates.x, randomTile.coordinates.y), vector2d(randomTile.coordinates.x, randomTile.coordinates.y));
 }
 
 /*eol@eof*/

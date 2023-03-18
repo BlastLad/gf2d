@@ -44,7 +44,7 @@ typedef struct Entity_S {
 
 
 	int index;
-
+	int uniqueEntityTypeID;
 	struct Entity_S* parent;
 	enum EntityTags tag;
 
