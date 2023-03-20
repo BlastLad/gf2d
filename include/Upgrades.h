@@ -12,5 +12,7 @@ Entity* Spellbook_New(Vector2D position, Vector2D gridPosition);
 Entity* Mix_Upgrade_New(Vector2D position, Vector2D gridPosition);
 Entity* Mix_Base_New(Vector2D position, Vector2D gridPosition);
 Entity* Shadow_Clone_PickUp_New(Vector2D position, Vector2D gridPosition);
+Entity* Emerald_New(Vector2D position, Vector2D gridPosition, int index);
+Entity* Emerald_PickUp_New(Vector2D position, Vector2D gridPosition);
 
 #endif

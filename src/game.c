@@ -22,30 +22,32 @@
 
 void SpawnHazard();
 
-int main(int argc, char * argv[])
+void removeStudent();
+
+int main(int argc, char* argv[])
 {
     /*variable declarations*/
     int done = 0;
     Level* tileMap;
-   
-    const Uint8 * keys;
 
-    Sprite *sprite;
+    const Uint8* keys;
+
+    Sprite* sprite;
     //NEW
-    Entity *playerEntity;//make it pointer probs for all this shit
-    List *Students;
-    List *AllFurnitureList;
+    Entity* playerEntity;//make it pointer probs for all this shit
+    List* Students;
+    List* AllFurnitureList;
     Entity* normalStudent;
     Entity* furnitureItem;
     Entity* entityCreator;
 
 
     //NEW
-    
-    int mx,my, indexer;
+
+    int mx, my, indexer;
     float mf = 0;
-    Color mouseColor = gfc_color8(255,100,255,200);
-    
+    Color mouseColor = gfc_color8(255, 100, 255, 200);
+
     /*program initializtion*/
     init_logger("gf2d.log");
     slog("---==== BEGIN ====---");
@@ -53,9 +55,9 @@ int main(int argc, char * argv[])
         "Super BeWitched!",
         1200,
         720,
-        664,
-        424,
-        vector4d(0,0,0,255),
+        640,
+        416,
+        vector4d(0, 0, 0, 255),
         0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
@@ -64,11 +66,11 @@ int main(int argc, char * argv[])
     gf2d_body_manager_init(200);
     gf3d_cliplayers_init("config/cliplayers.cfg");
     SDL_ShowCursor(SDL_DISABLE);
-    
+
     /*demo setup*/
 
     tileMap = level_load("config/test.tilemap");
-    level_set_active_level(tileMap);    
+    level_set_active_level(tileMap);
     set_current_level_num(1);
     set_current_level_totalStudents(20);
     set_current_level_remainingStudents(get_current_level_totalStudents());
@@ -90,22 +92,35 @@ int main(int argc, char * argv[])
     gfc_list_append(AllFurnitureList, furnitureItem);
 
     PiperData* piperDataPointer;
-
+    int eKeyDown = 0;
     piperDataPointer = (struct PiperData*)playerEntity->data;
 
     gui_setup_hud(piperDataPointer, get_current_level_remainingStudents);
 
     Students = gfc_list_new();
+    set_student_list(Students);
     int numOfStudents = get_current_level_totalStudents();
+
+    Mix_Base_New(graph_to_world_pos(1, 2), vector2d(1, 2));
+    Shadow_Clone_PickUp_New(graph_to_world_pos(1, 4), vector2d(1, 4));
+    Emerald_PickUp_New(graph_to_world_pos(1, 8), vector2d(1, 8));
+    Spellbook_New(graph_to_world_pos(1, 6), vector2d(1, 6));
+
+    Mix_Upgrade_New(graph_to_world_pos(16, 2), vector2d(16, 2));
+    Dual_Cast_Upgrade_New(graph_to_world_pos(16, 3), vector2d(16, 3));
+    Max_Spellbook_New(graph_to_world_pos(16, 4), vector2d(16, 4));
+    Health_Pot_New(graph_to_world_pos(16, 5), vector2d(16, 5));
+
+
     /*main game loop*/
-    while(!done)
+    while (!done)
     {
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         /*update things here*/
-        SDL_GetMouseState(&mx,&my);
-        mf+=0.1;
-       
+        SDL_GetMouseState(&mx, &my);
+        mf += 0.1;
+
 
         if (mf >= 16.0) {
 
@@ -125,22 +140,79 @@ int main(int argc, char * argv[])
         tileMap_Update(level_get_active_level());//need to check
         entity_update_all();//need to check
 
-       /* if (Students->count > 0) {
+        if (Students->count > 0) {
             for (indexer = Students->count - 1; indexer >= 0; indexer--) {
                 normalStudent = gfc_list_get_nth(Students, indexer);
                 if (!normalStudent)continue;
                 if (normalStudent->markedForDestruction > 0) {
-                    normal_student_remove_from_list(Students, normalStudent);
+                    removeStudent(Students, normalStudent);
                 }
             }
-        }*/
-        int useSpell  = 0;
-        if (keys[SDL_SCANCODE_TAB] && piperDataPointer->currentSpellBooks > 0) 
+        }
+
+        int useSpell = 0;
+        if (keys[SDL_SCANCODE_TAB] && piperDataPointer->currentSpellBooks > 0)
         {
             piperDataPointer->currentSpellBooks -= 1;
             useSpell = 1;
 
         }// exit condition
+
+
+        if (!keys[SDL_SCANCODE_E])
+        {
+            eKeyDown = 0;
+        }
+
+
+
+        if (keys[SDL_SCANCODE_E] && eKeyDown == 0)
+        {
+            eKeyDown = 1;
+            if (piperDataPointer->emeraldAbility == 1) {
+                int NumPools;
+                NumPools = checkEmeraldPoolStatus();
+                if (NumPools == 1)
+                {
+                    slog("Here");
+                    int isEmerald1Carpet;
+                    isEmerald1Carpet = 0;
+
+                    float xe;
+                    xe = playerEntity->position.x / 32;
+                    if (xe - ceilf(xe) < 0.5)
+                        xe = ceilf(xe);
+                    else
+                        xe = floorf(xe);
+                    int xeInt = (int)xe;
+
+
+                    float ye;
+                    ye = playerEntity->position.y / 32;
+                    if (ye - ceilf(ye) < 0.5)
+                        ye = ceilf(ye);
+                    else
+                        ye = floorf(ye);
+                    int yeInt = (int)ye;
+
+                    TileInfo tileToCheck;
+                    tileToCheck = get_graph_node(xeInt - 1, yeInt - 1);
+                    if (tileToCheck.tileFrame >= 2 && tileToCheck.tileFrame <= 12) {//isCarpet
+                        isEmerald1Carpet = 1;
+                    }
+
+
+                    if (isEmerald1Carpet == 1)
+                        Emerald_New(playerEntity->position, vector2d(xeInt - 1, yeInt - 1), 1);
+                    else
+                    {
+                        resetEmeraldPoolStatus();
+                    }
+                }
+            }
+        }    
+
+
 
         if (AllFurnitureList->count > 0) {
             for (indexer = AllFurnitureList->count - 1; indexer >= 0; indexer--) {
@@ -187,7 +259,19 @@ void SpawnHazard()
 {
     TileInfo randomTile;
     randomTile = Get_Random_GridNode();
-    Mix_Upgrade_New(graph_to_world_pos(randomTile.coordinates.x, randomTile.coordinates.y), vector2d(randomTile.coordinates.x, randomTile.coordinates.y));
+
+}
+
+void removeStudent(List* student_list, Entity* self)
+{
+    set_current_level_remainingStudents(get_current_level_remainingStudents() - 1);
+    if (self->markedForDestruction == 2) 
+    {
+        GetPiperData()->currentHealth -= 1;
+    }
+    gfc_list_delete_data(student_list, self);
+    level_remove_entity(self);
+    entity_free(self);
 }
 
 /*eol@eof*/

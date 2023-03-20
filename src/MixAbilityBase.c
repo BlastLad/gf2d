@@ -46,7 +46,7 @@ Entity* Mix_Base_New(Vector2D position, Vector2D gridPosition)
 	level_add_entity(level_get_active_level(), ent);
 
 	ent->timer = 0;
-	ent->markedForDestruction = 1;//true
+	ent->markedForDestruction = 0;//true
 	return ent;
 }
 
@@ -74,11 +74,11 @@ int MixBase_collision(DynamicBody* self, List* collision)
 				if (ent)
 				{
 					//cast as piper data
-					if (ent->uniqueEntityTypeID == 1 && self->entityAttached->timer < 48.0) {
+					if (ent->uniqueEntityTypeID == 1 && self->entityAttached->markedForDestruction == 0) {
 						PiperData* piperDataPointer;
 						piperDataPointer = (struct PiperData*)ent->data;
 						piperDataPointer->mixAbility = 1;
-						self->entityAttached->timer = 48.0;
+						self->entityAttached->markedForDestruction = 1;
 						return 1;
 					}
 				}
@@ -100,16 +100,11 @@ void MixBase_destroy(Entity* self)
 void MixBase_update(Entity* self)
 {
 	if (self->markedForDestruction == 1)
-	{
-		self->timer += 0.1;
-		if (self->timer >= 48.0) {
-
-
+	{		
 			self->body.team = 3;
 			self->timer = 0;
 			self->markedForDestruction = 0;
-			MixBase_destroy(self);
-		}
+			MixBase_destroy(self);		
 	}
 }
 

@@ -16,6 +16,8 @@ int piper_on_static_collision(DynamicBody* self, List* collision);
 
 
 
+
+
 static PiperData piperData = {
 	false, //sleepUpgrade
 	false,
@@ -25,9 +27,14 @@ static PiperData piperData = {
 	1,
 	1,
 	0,
+	0,
+	0,
 	0
 };
 
+PiperData* GetPiperData() {
+	return &piperData;
+}
 
 void SetTagsPlayer(Entity* self) 
 {
@@ -102,8 +109,6 @@ void piper_update(Entity* self)
 		}
 	}
 
-
-	slog("speed %f",self->speed);
 	if (self->speed > 2) {
 		piperData.timeSpedUp += 0.1;
 		if (piperData.timeSpedUp > 30.0) {
@@ -144,12 +149,6 @@ void MixingSpellCast(Vector2D direction, Entity* ent)
 		if (direction.x == 0 && direction.y == 0)
 			direction.y += 1;
 		mixing_spell_new(ent->position, ent, direction);
-
-		if (piperData.mixingUpgrade == true)
-		{
-			vector2d_negate(direction, direction);
-			mixing_spell_new(ent->position, ent, direction);
-		}
 	}
 }
 
@@ -216,13 +215,13 @@ void piper_think(Entity* self) {
 
 	if (keys[SDL_SCANCODE_Q] && qKeyDown == 0)
 	{
-		lShift = 1;
+		qKeyDown = 1;
 		MixingSpellCast(dir, self);
 
 	}
 	else if (!keys[SDL_SCANCODE_Q])
 	{
-		lShift = 0;
+		qKeyDown = 0;
 	}
 
 	if (keys[SDL_SCANCODE_LSHIFT]) {

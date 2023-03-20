@@ -46,7 +46,7 @@ Entity* Mix_Upgrade_New(Vector2D position, Vector2D gridPosition)
 	level_add_entity(level_get_active_level(), ent);
 
 	ent->timer = 0;
-	ent->markedForDestruction = 1;//true
+	ent->markedForDestruction = 0;//true
 	return ent;
 }
 
@@ -74,11 +74,11 @@ int MixUpgrade_collision(DynamicBody* self, List* collision)
 				if (ent)
 				{
 					//cast as piper data
-					if (ent->uniqueEntityTypeID == 1 && self->entityAttached->timer < 48.0) {
+					if (ent->uniqueEntityTypeID == 1 && self->entityAttached->markedForDestruction == 0) {
 						PiperData* piperDataPointer;
 						piperDataPointer = (struct PiperData*)ent->data;
-						piperDataPointer->mixingUpgrade = 1;
-						self->entityAttached->timer = 48.0;
+						piperDataPointer->mixingUpgrade = 1;						
+						self->entityAttached->markedForDestruction = 1;					
 						return 1;
 					}
 				}
@@ -92,7 +92,7 @@ int MixUpgrade_collision(DynamicBody* self, List* collision)
 
 void MixUpgrade_destroy(Entity* self)
 {
-
+	slog("HIT");
 	level_remove_entity(self);
 	entity_free(self);
 }
@@ -101,15 +101,13 @@ void MixUpgrade_update(Entity* self)
 {
 	if (self->markedForDestruction == 1)
 	{
-		self->timer += 0.1;
-		if (self->timer >= 48.0) {
 
 
 			self->body.team = 3;
 			self->timer = 0;
 			self->markedForDestruction = 0;
 			MixUpgrade_destroy(self);
-		}
+		
 	}
 }
 

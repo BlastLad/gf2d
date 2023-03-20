@@ -16,8 +16,8 @@ Entity* Broom_New(Vector2D position, Vector2D gridPosition)
 
 	if (!ent)return NULL;
 	ent->sprite = gf2d_sprite_load_all("images/Broom3.png",
-		32,
-		32,
+		16,
+		16,
 		1,
 		0);
 
@@ -25,7 +25,7 @@ Entity* Broom_New(Vector2D position, Vector2D gridPosition)
 
 	ent->startFrame = 0;
 	ent->endFrame = 0;
-	ent->drawOffset = vector2d(16, 16);
+	ent->drawOffset = vector2d(8, 8);
 
 	ent->shape = gfc_shape_rect(gridPosition.x * 32, gridPosition.y * 32, 32, 32);
 	ent->body.shape = &ent->shape;

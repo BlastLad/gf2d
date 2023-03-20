@@ -4,6 +4,7 @@
 #include "SleepSpell.h"
 #include "MixingSpell.h"
 #include "DynamicBody.h"
+#include "Piper.h"
 
 
 
@@ -53,7 +54,7 @@ Entity* shadow_clone_entity_new(Vector2D spawnPosition)
 	ent->body.worldtouch = shadow_clone_on_static_collision;
 
 	vector2d_copy(ent->position, spawnPosition);
-	ent->speed = 4;
+	ent->speed = 2;
 	ent->markedForDestruction = 0;
 	ent->counter = 0;
 	ent->index = 0;
@@ -100,6 +101,11 @@ void ShadowSleepSpellCast(Vector2D direction, Entity* ent)
 		direction.y += 1;
 	sleep_spell_new(ent->position, ent, direction);
 
+	if (GetPiperData()->sleepUpgrade) 
+	{
+		vector2d_negate(direction, direction);
+		sleep_spell_new(ent->position, ent, direction);
+	}
 	/*if (piperData.sleepUpgrade == true)
 	{
 		vector2d_negate(direction, direction);
@@ -109,9 +115,16 @@ void ShadowSleepSpellCast(Vector2D direction, Entity* ent)
 
 void ShadowMixingSpellCast(Vector2D direction, Entity* ent)
 {
-	if (direction.x == 0 && direction.y == 0)
-		direction.y += 1;
-	mixing_spell_new(ent->position, ent, direction);
+	if (GetPiperData()->mixAbility) 
+	{
+		if (direction.x == 0 && direction.y == 0)
+			direction.y += 1;
+		mixing_spell_new(ent->position, ent, direction);
+	}
+
+	if (GetPiperData()->mixingUpgrade) {
+
+	}
 
 	/*if (piperData.mixingUpgrade == true)
 	{
@@ -196,6 +209,8 @@ void shadow_clone_think(Entity* self) {
 	}
 
 	vector2d_normalize(&dir);
+	vector2d_set_magnitude(&dir, self->speed);
+
 	vector2d_copy(self->body.velocity, dir);
 
 	vector2d_copy(self->position, self->body.position);

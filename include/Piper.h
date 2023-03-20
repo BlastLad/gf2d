@@ -7,11 +7,11 @@
 
 Entity *piper_entity_new(Vector2D spawnPosition);
 
+
 typedef struct
 {
 	int sleepUpgrade;
 	int mixingUpgrade;
-	int mixAbility;
 	int currentHealth;
 	int maxHealth;
 	int currentHealthFragments;
@@ -19,7 +19,14 @@ typedef struct
 	int maxSpellBooks;
 	float timeSpedUp;
 	int shadowClone;
+	int mixAbility;
+	int emeraldAbility;
+
 }PiperData;
+
+
+PiperData* GetPiperData();
+
 
 
 #endif // !__PIPER_H__

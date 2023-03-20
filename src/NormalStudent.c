@@ -55,6 +55,7 @@ Entity* normal_student_new(Vector2D position, int gridPositionX, int gridPositio
 	ent->body.cliplayer = 2;
 	ent->body.team = 2;
 	ent->tag = Student;	
+	ent->uniqueEntityTypeID = 3;
 	vector2d_copy(ent->body.position, position);
 	level_add_entity(level_get_active_level(),ent);
 	//collision stuff end
@@ -86,10 +87,18 @@ void normal_student_update(Entity* self)
 	if (self->currentGridPosition.y >= 11.0 && self->markedForDestruction == 0) {
 		//despawn or mark for despawen?
 		self->markedForDestruction = 1;
-		normal_student_destroy(self);
+		//normal_student_destroy(self);
 	}
-	else if (self->markedForDestruction == 1) {
-		normal_student_destroy(self);
+	if (self->uniqueEntityTypeID == 4) {
+		
+		self->timer += 0.1;
+
+		if (self->timer > 50.0) {
+			self->timer = 0;
+			self->uniqueEntityTypeID = 3;
+		}
+
+		//normal_student_destroy(self);
 	}
 }
 
@@ -104,7 +113,7 @@ int student_on_world_collision(DynamicBody* self, List* collision)
 		if (!other) continue;
 		if (other->shape.identifier == Furniture) 
 		{//collider with player
-			self->entityAttached->markedForDestruction = 1;
+			self->entityAttached->markedForDestruction = 2;
 			return 1;
 		}
 	}
@@ -126,7 +135,8 @@ int student_on_collision(DynamicBody* self, List* collision) {
 		if (other->collisionTag == Furniture) {
 
 			//slog("Student collided %i", other->collisionTag);
-			self->entityAttached->markedForDestruction = 1;
+			if (self->entityAttached->uniqueEntityTypeID == 3)
+				self->entityAttached->markedForDestruction = 1;
 			return 1;
 		}
 	}
