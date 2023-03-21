@@ -138,7 +138,8 @@ void bubbles_update(Entity* self)
 		//}
 
 		self->timer += 0.1;
-		if (self->index >= 1) {//currentlyy locked down
+		if (self->index >= 1) 
+		{//currentlyy locked down
 
 			if (GetPiperData()->mixingUpgrade == 1 && self->timer >= 64.0)
 			{
@@ -187,7 +188,7 @@ void bubbles_update(Entity* self)
 			}
 			return;
 		}
-		if (self->timer >= 64.0) {
+		if (self->timer >= 128.0) {
 
 			//if (bbe)
 			//{

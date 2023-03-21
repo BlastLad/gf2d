@@ -95,7 +95,7 @@ void rugby_update(Entity* self)
 		self->startFrame = 3;
 		self->endFrame = 7;
 		self->body.team = 2;
-		if (self->timer >= 64.0) {
+		if (self->timer >= 128.0) {
 
 		
 			self->body.team = 3;

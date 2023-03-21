@@ -21,8 +21,8 @@ int piper_on_static_collision(DynamicBody* self, List* collision);
 static PiperData piperData = {
 	false, //sleepUpgrade
 	false,
-	3,
-	3,
+	50,
+	50,
 	0,
 	1,
 	1,

@@ -14,7 +14,7 @@ E: Use Emerald Pool at current position
 
 Left-Shift: Use Shadow Effigy at current position
 
-TAB: Use Ultimate CLean
+TAB: Use Ultimate Clean
  
 
 # Gameplay
@@ -42,11 +42,13 @@ Your students travel to their next class by following the red carpet tiles that 
 
 1: Sleep Spell: (Bound to space): Your primary way of disabling the enemy furniture, The Sleep Spell will temporarily stop the furniture from eating students.
 
-2: Lockdown Spell: (Bound to Q): A special spell that can be used on the Cauldron Funriture (Named Bubbles). This spell will completly stop Bubbles from eating studets, and also prevent him from reawaking
+2: Lockdown Spell: (Bound to Q): A special spell that can be used on the Cauldron Funriture (Named Bubbles). This spell will completly stop Bubbles from eating studets, and also prevent him from reawaking.
 If you use this spell again on another Bubbles enemy, the first Bubbles will reactivate.
 
-3: Emerald Pool Portal: (Bound to E): When used it places one emerald portal on the ground at the players current location. When used again at a different location an exit portal will spawn. When a student or certain enemies touch a portal they will
-be teleported to the other portals location. (Portals must be placed on the same tile type IE: Both on carpet or both on Wood) Using The portal a third time will close both place portals
+3: Emerald Pool Portal: (Bound to E): When used it places 
+one emerald pool on the ground at the players current carpet location.
+If a student enters this pool they will glow green and be immune to getting eaten for a 
+peroid of time.
 
 4: Shadow Effigy: When used a Shadow clone of your self will spawn at your location and mirror your movements. When you cast Sleep or Lockdown the clone will as well. 
 
@@ -58,7 +60,7 @@ be teleported to the other portals location. (Portals must be placed on the same
 
 2: Dual-Cast Sleep: A Permenant Upgrade that will also cast the Sleep Spell behind piper when ever cast
 
-3: Broom of Speed: A Temporary Upgrade that will increase Piper's base speed for 15 seconds
+3: Broom of Speed: A Temporary Upgrade that will increase Piper's base speed for a few seconds
 
 4: Transformative Lockdown: A Permenant upgrade that makes it so that while lock down is active on Bubbles, every 5 students that pass will cause bubbles to spawn a Health Potion, Broom, or (very rarely a Spell Book)
 Counter restarts if a new Bubbles is targeted
@@ -75,10 +77,7 @@ Counter restarts if a new Bubbles is targeted
 
 4: Spill Prank: Magic teleporting water spills that will cause Piper to be unable to act for a short time if she touches one.
 
-5: Bookish: Enchanted books that will fly out from book shelves, if one hits piper, she will lose 1 HP and be unable to act for a short time 
-
-6: Bully: A bully that will spawn and target a nervous student on the game field. If the bully reaches the nervous student. Piper will lose 1 HP. When the nervous student
-Leaves the game map, the bully will as well
+5: Bookish: Enchanted books that will fly out from book shelves, if one hits piper, she will lose 1 HP and be unable to act for a short time
 
 # gameframework2d (GF2D)
 a collection of utlitity functions designed to facilitate creating 2D games with SDL2

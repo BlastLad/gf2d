@@ -28,7 +28,7 @@ Entity* sleep_spell_new(Vector2D spawnPosition, Entity* parent, Vector2D directi
 
 	ent->update = sleep_spell_update;
 	ent->drawOffset = vector2d(8, 8);
-	ent->speed = 5;
+	ent->speed = 3;
 
 	ent->currentGridPosition = spawnPosition;//this will be for timing distance 
 	//collion stuff
@@ -120,6 +120,9 @@ int sleep_spell_collision(DynamicBody* self, List* collision)
 				if (ent) 
 				{					
 					ent->markedForDestruction = 1;
+					if (ent->index == 0) {
+						ent->timer = 0;
+					}
 					self->entityAttached->markedForDestruction = 1;
 
 					ent->startFrame = 3;
@@ -164,6 +167,7 @@ void sleep_spell_update(Entity* self)
 	}
 
 	vector2d_normalize(&dir);
+	vector2d_set_magnitude(&dir, self->speed);
 	vector2d_copy(self->body.velocity, dir);
 
 	vector2d_copy(self->position, self->body.position);

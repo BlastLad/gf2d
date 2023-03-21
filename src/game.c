@@ -46,6 +46,8 @@ int main(int argc, char* argv[])
 
     int mx, my, indexer;
     float mf = 0;
+    float mh = 0;
+    float mp = 0;
     Color mouseColor = gfc_color8(255, 100, 255, 200);
 
     /*program initializtion*/
@@ -81,14 +83,18 @@ int main(int argc, char* argv[])
 
     AllFurnitureList = gfc_list_new();
 
-    playerEntity = piper_entity_new(graph_to_world_pos(7, 6));
+    playerEntity = piper_entity_new(graph_to_world_pos(9, 9));
     furnitureItem = Rugby_New(graph_to_world_pos(7, 9), vector2d(7, 9));
     gfc_list_append(AllFurnitureList, furnitureItem);
-    furnitureItem = Bubbles_New(graph_to_world_pos(12, 8), vector2d(12, 8), vector2d(11, 8));
+    furnitureItem = Rugby_New(graph_to_world_pos(12, 9), vector2d(12, 9));
     gfc_list_append(AllFurnitureList, furnitureItem);
-    furnitureItem = Bubbles_New(graph_to_world_pos(14, 8), vector2d(14, 8), vector2d(15, 8));
+    furnitureItem = Bubbles_New(graph_to_world_pos(14, 8), vector2d(14, 8), vector2d(11, 8));
     gfc_list_append(AllFurnitureList, furnitureItem);
-    furnitureItem = karter_new(graph_to_world_pos(6, 6), 6, 6, 15, 6);
+    furnitureItem = Bubbles_New(graph_to_world_pos(5, 8), vector2d(5, 8), vector2d(6, 8));
+    gfc_list_append(AllFurnitureList, furnitureItem);
+    furnitureItem = karter_new(graph_to_world_pos(4, 6), 4, 6, 10, 6);
+    gfc_list_append(AllFurnitureList, furnitureItem);
+    furnitureItem = karter_new(graph_to_world_pos(13, 2), 13, 2, 13, 11);
     gfc_list_append(AllFurnitureList, furnitureItem);
 
     PiperData* piperDataPointer;
@@ -120,6 +126,8 @@ int main(int argc, char* argv[])
         /*update things here*/
         SDL_GetMouseState(&mx, &my);
         mf += 0.1;
+        mh += 0.1;
+        mp += 0.1;
 
 
         if (mf >= 16.0) {
@@ -132,9 +140,36 @@ int main(int argc, char* argv[])
 
                 numOfStudents--;
 
-                SpawnHazard();
+            }
+            else 
+            {
+                if (piperDataPointer->currentHealth == piperDataPointer->maxHealth) 
+                {
+                    Spellbook_New(graph_to_world_pos(8, 6), vector2d(8, 6));
+                    //spawn spell book
+                }
+                
+                Health_Pot_New(graph_to_world_pos(10, 6), vector2d(10, 6));
+
+                //spawn health pot
+                set_current_level_num(get_current_level_num());
+                set_current_level_totalStudents(get_current_level_totalStudents() + 4);
+                set_current_level_remainingStudents(get_current_level_totalStudents());                
+                numOfStudents = get_current_level_totalStudents();
             }
         }
+
+        if (mh >= 40.0) {
+            mh = 0;
+            SpawnHazard();
+        }
+
+        if (mp >= 60) {
+            mp = 0;
+
+        }
+
+
 
         entity_think_all();//need to check
         tileMap_Update(level_get_active_level());//need to check
@@ -255,10 +290,25 @@ int main(int argc, char* argv[])
 }
 
 
+void SpawnPowerUp() {
+    TileInfo randomTile;
+    randomTile = Get_Random_GridNode();
+    float ranNum;
+    ranNum = gfc_random();
+    if (ranNum > 0.7) {
+        Health_Pot_New(graph_to_world_pos(randomTile.coordinates.x, randomTile.coordinates.y), vector2d(randomTile.coordinates.x, randomTile.coordinates.y));
+    }
+    else
+    {
+        Broom_New(graph_to_world_pos(randomTile.coordinates.x, randomTile.coordinates.y), vector2d(randomTile.coordinates.x, randomTile.coordinates.y));
+    }
+}
+
 void SpawnHazard() 
 {
     TileInfo randomTile;
     randomTile = Get_Random_GridNode();
+    Water_Spill_New(graph_to_world_pos(randomTile.coordinates.x, randomTile.coordinates.y), vector2d(randomTile.coordinates.x, randomTile.coordinates.y));
 
 }
 

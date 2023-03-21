@@ -84,7 +84,7 @@ void karter_update(Entity* self)
 		self->endFrame = 6;
 
 		self->timer += 0.1;
-		if (self->timer >= 64.0) {
+		if (self->timer >= 128.0) {
 
 
 			self->body.team = 3;
