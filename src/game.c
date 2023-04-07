@@ -116,13 +116,14 @@ int main(int argc, char* argv[])
     Dual_Cast_Upgrade_New(graph_to_world_pos(16, 3), vector2d(16, 3));
     Max_Spellbook_New(graph_to_world_pos(16, 4), vector2d(16, 4));
     Health_Pot_New(graph_to_world_pos(16, 5), vector2d(16, 5));
-
-
+    int hub;
+    hub = 0;
     /*main game loop*/
     while (!done)
     {
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+        //SDL_GetTicks
         /*update things here*/
         SDL_GetMouseState(&mx, &my);
         mf += 0.1;
@@ -161,6 +162,10 @@ int main(int argc, char* argv[])
 
         if (mh >= 40.0) {
             mh = 0;
+            if (hub == 0) {
+                PathFinding(7, 7, 7, 11);
+                hub = 1;
+            }
             SpawnHazard();
         }
 

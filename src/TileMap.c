@@ -353,6 +353,240 @@ void level_build(Level* level)
 }
 
 
+
+int GetWeightForTileIndex(int tileFrame) {
+
+    switch (tileFrame)
+    {
+    case 1:
+        return 99;
+    case 17:
+        return 17;
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+    case 10:
+        return 1;
+    default:
+       return 1;
+    }
+    return 99;
+}
+
+void xy(void* data) 
+{
+    TileInfo* v;
+    if (data) {
+        v = data;
+        slog("Hello %i", v->coordinates.x);
+    }
+}
+
+
+typedef struct
+{
+    Vector2D coordinates;
+    TileInfo* tileInfo;
+    float distanceValue;
+}dist;
+
+typedef struct
+{
+    Vector2D currentCoordinates;
+    TileInfo* tileInfo;
+    TileInfo* prevNode;
+}prev;
+
+
+void PathFinding(int srcX, int srcY, int destX, int destY) 
+{
+    TileInfo srcTile; 
+    srcTile = get_graph_node(srcX, srcY);
+    TileInfo dstTile; 
+    dstTile = get_graph_node(destX, destY);
+    TileInfo* unvisited;
+
+    unvisited = gfc_allocate_array(sizeof(TileInfo), graph_manager.graph_max);
+
+
+    //gfc_list_foreach_context(graph_manager.graph, xy, )
+    //gfc_list_foreach(graph_manager.graph, xy);
+
+    List* unvistedList;
+   // List* distList;
+  //  List* prevList;
+
+    dist* distArray;
+    distArray = gfc_allocate_array(sizeof(dist), graph_manager.graph_max);
+    prev* prevArray;
+    prevArray = gfc_allocate_array(sizeof(prev), graph_manager.graph_max);
+
+
+    unvistedList = gfc_list_new();
+   // distList = gfc_list_new();
+   // prevList = gfc_list_new();
+
+    int i;
+    int j;
+    TileInfo tobeAppend;
+    dist distanceItem;
+    prev prevItem;
+
+    vector2d_copy(distanceItem.coordinates, srcTile.coordinates);
+    vector2d_copy(prevItem.currentCoordinates, srcTile.coordinates);
+    distanceItem.distanceValue = 0;
+    distanceItem.tileInfo = &srcTile;
+    prevItem.tileInfo = &srcTile;
+    prevItem.prevNode = NULL;
+
+    distArray[(srcY * (int)graph_manager.graphSizeX) + srcX] = distanceItem;
+    prevArray[(srcY * (int)graph_manager.graphSizeX) + srcX] = prevItem;
+    
+    //gfc_list_append(distList, &distanceItem);
+   // gfc_list_append(prevList, &prevItem);
+
+    for (j = 0; j < graph_manager.graphSizeY; j++)//j is row
+    {
+        for (i = 0; i < graph_manager.graphSizeX; i++)// i is column
+        {   
+            tobeAppend = get_graph_node(i, j);
+
+            if (tobeAppend.coordinates.x == srcX && tobeAppend.coordinates.y == srcY) 
+            {
+                
+            }
+            else 
+            {
+                vector2d_copy(distanceItem.coordinates, tobeAppend.coordinates);
+                vector2d_copy(prevItem.currentCoordinates, tobeAppend.coordinates);
+                distanceItem.distanceValue = 99;
+                prevItem.prevNode = NULL;
+                distanceItem.tileInfo = &tobeAppend;
+                prevItem.tileInfo = &tobeAppend;
+                // gfc_list_append(distList, &distanceItem);
+                // gfc_list_append(prevList, &prevItem);
+                distArray[(j * (int)graph_manager.graphSizeX) + i] = distanceItem;
+                prevArray[(j * (int)graph_manager.graphSizeX) + i] = prevItem;
+            }
+
+
+            gfc_list_append(unvistedList, &tobeAppend);
+            unvisited[(j * (int)graph_manager.graphSizeX) + i] = get_graph_node(i, j);
+        }
+    }
+
+
+
+    slog("OK Number 1 %f", distArray[0 + 4].distanceValue);
+
+    TileInfo* u;
+    TileInfo* possibleU;
+    int possibleUX;
+    int possibleUY;
+    int uY;
+    int uX;
+
+    while (unvistedList->count > 0)
+    {
+        u = NULL;
+        int k;
+        for (k = 0; k < unvistedList->count; k++) 
+        {
+            //k is possible u
+            possibleU = gfc_list_get_nth(unvistedList, k);
+
+
+            possibleUX = possibleU->coordinates.x;
+            possibleUY = possibleU->coordinates.y;
+                  
+
+
+            if (u == NULL)
+            {
+               // slog("OK Number 2");
+
+                u = gfc_list_get_nth(unvistedList, k);
+                uY = u->coordinates.y;
+                uX = u->coordinates.x;
+            }
+            else if (distArray[(possibleUY * (int)graph_manager.graphSizeX) +
+                possibleUX].distanceValue <
+                distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue) 
+            {
+              //  slog("OK Number 2.5");
+
+                u = gfc_list_get_nth(unvistedList, k);
+                uY = u->coordinates.y;
+                uX = u->coordinates.x;
+            }
+        }
+
+        if (uX == dstTile.coordinates.x && uY == dstTile.coordinates.y) {
+            break;
+        }
+
+        gfc_list_delete_data(unvistedList, u);
+
+        int nodeNeighbourIndex;
+        for (nodeNeighbourIndex = 0; nodeNeighbourIndex < 4; nodeNeighbourIndex++) 
+        {
+            float alt;
+            float nAlt;
+            TileInfo* currentNeighbour;
+            int currentNeighbourX;
+            int currentNeighbourY;
+
+      
+
+
+           /* for (i = 0; i < 4; i++) {
+                if (get_graph_node(x, y).neighbours[i] != NULL) {
+                    TileInfo* currentNeighbour;
+                    currentNeighbour = get_graph_node(x, y).neighbours[i];
+                    gf2d_draw_circle(graph_to_world_pos(currentNeighbour->coordinates.x, currentNeighbour->coordinates.y), 5, gfc_color(255, 0, 0, 255));
+                }
+            }*/
+            if (u->neighbours[nodeNeighbourIndex] != NULL)
+            {
+                currentNeighbour = u->neighbours[nodeNeighbourIndex];
+                currentNeighbourX = currentNeighbour->coordinates.x;
+                currentNeighbourY = currentNeighbour->coordinates.y;
+                nAlt = GetWeightForTileIndex(currentNeighbour->tileFrame);
+                //distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue
+               // slog("OK Number 3");
+
+                alt = distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue + nAlt;
+
+                if (alt < distArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)].distanceValue)
+                {
+
+                    distanceItem.distanceValue = alt;
+                    distanceItem.tileInfo = currentNeighbour;
+                    vector2d_copy(distanceItem.coordinates, currentNeighbour->coordinates);
+                    //coords
+
+                    distArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)] = distanceItem;
+                    prevItem.prevNode = u;
+                    vector2d_copy(prevItem.currentCoordinates, currentNeighbour->coordinates);
+                    prevItem.tileInfo = currentNeighbour;
+
+                    prevArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)] = prevItem;
+                    //remap it
+                }
+              //  slog("OK Number 4");
+            }
+        }
+    } 
+
+
+}
+
+
 void get_next_carpet_tile(float x, float y, Entity *ent) 
 {    
     int j;

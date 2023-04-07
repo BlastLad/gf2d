@@ -42,6 +42,8 @@ GraphManager* get_graph();
 
 TileInfo get_graph_node(int x, int y);
 
+void PathFinding(int srcX, int srcY, int destX, int destY);
+
 void get_next_carpet_tile(float x, float y, Entity* ent);
 
 void get_next_previous_tile(float x, float y, Entity* ent);
