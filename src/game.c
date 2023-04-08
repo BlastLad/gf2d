@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
         if (mh >= 40.0) {
             mh = 0;
             if (hub == 0) {
-                PathFinding(7, 7, 7, 11);
+                PathFinding(7, 7, 7, 10);
                 hub = 1;
             }
             SpawnHazard();

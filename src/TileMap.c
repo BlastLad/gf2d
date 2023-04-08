@@ -26,6 +26,13 @@ TileInfo get_graph_node(int x, int y)
     return graph_manager.graph[(y * (int)graph_manager.graphSizeX) + x];
 }
 
+TileInfo* get_graph_node_pointer(int x, int y)
+{
+    TileInfo* tf;
+    tf = &graph_manager.graph[(y * (int)graph_manager.graphSizeX) + x];
+    return tf;
+}
+
 Vector2D graph_to_world_pos(int x, int y)
 {
     TileInfo tileToGet;
@@ -409,9 +416,9 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
     srcTile = get_graph_node(srcX, srcY);
     TileInfo dstTile; 
     dstTile = get_graph_node(destX, destY);
-    TileInfo* unvisited;
+  //  TileInfo* unvisited;
 
-    unvisited = gfc_allocate_array(sizeof(TileInfo), graph_manager.graph_max);
+  //  unvisited = gfc_allocate_array(sizeof(TileInfo), graph_manager.graph_max);
 
 
     //gfc_list_foreach_context(graph_manager.graph, xy, )
@@ -433,10 +440,13 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
 
     int i;
     int j;
-    TileInfo tobeAppend;
+    TileInfo* tobeAppend;
     dist distanceItem;
     prev prevItem;
+    TileInfo newTile;
 
+
+    //Initalizes the sourceTiles items in the distacne and prev arrays
     vector2d_copy(distanceItem.coordinates, srcTile.coordinates);
     vector2d_copy(prevItem.currentCoordinates, srcTile.coordinates);
     distanceItem.distanceValue = 0;
@@ -447,55 +457,81 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
     distArray[(srcY * (int)graph_manager.graphSizeX) + srcX] = distanceItem;
     prevArray[(srcY * (int)graph_manager.graphSizeX) + srcX] = prevItem;
     
+    slog("graph man max %i", graph_manager.graph_max);
+    int numberAdded = 1;
     //gfc_list_append(distList, &distanceItem);
    // gfc_list_append(prevList, &prevItem);
-
+    int hjx;
+    int hjy;
     for (j = 0; j < graph_manager.graphSizeY; j++)//j is row
     {
         for (i = 0; i < graph_manager.graphSizeX; i++)// i is column
         {   
-            tobeAppend = get_graph_node(i, j);
+            tobeAppend = get_graph_node_pointer(i, j);
+            hjx = tobeAppend->coordinates.x;
+            hjy = tobeAppend->coordinates.y;
+            
+            slog("OK Number 1 %i %i", hjx, hjy);
 
-            if (tobeAppend.coordinates.x == srcX && tobeAppend.coordinates.y == srcY) 
+            if (tobeAppend->coordinates.x == srcX && tobeAppend->coordinates.y == srcY) 
             {
                 
             }
             else 
             {
-                vector2d_copy(distanceItem.coordinates, tobeAppend.coordinates);
-                vector2d_copy(prevItem.currentCoordinates, tobeAppend.coordinates);
-                distanceItem.distanceValue = 99;
+                //initalizes the dist and pre arrays with 99 and NULL as defaults
+                vector2d_copy(distanceItem.coordinates, tobeAppend->coordinates);
+                vector2d_copy(prevItem.currentCoordinates, tobeAppend->coordinates);
+
+                hjx = distanceItem.coordinates.x;
+                hjy = distanceItem.coordinates.y;
+               // slog("OK Number 1 post %i %i", hjx, hjy);
+                distanceItem.distanceValue = 999;
                 prevItem.prevNode = NULL;
-                distanceItem.tileInfo = &tobeAppend;
-                prevItem.tileInfo = &tobeAppend;
+                distanceItem.tileInfo = tobeAppend;
+                prevItem.tileInfo = tobeAppend;
                 // gfc_list_append(distList, &distanceItem);
                 // gfc_list_append(prevList, &prevItem);
                 distArray[(j * (int)graph_manager.graphSizeX) + i] = distanceItem;
                 prevArray[(j * (int)graph_manager.graphSizeX) + i] = prevItem;
+                numberAdded += 1;
             }
 
-
-            gfc_list_append(unvistedList, &tobeAppend);
-            unvisited[(j * (int)graph_manager.graphSizeX) + i] = get_graph_node(i, j);
+            gfc_list_append(unvistedList, tobeAppend);
+          //  unvisited[(j * (int)graph_manager.graphSizeX) + i] = get_graph_node(i, j);
         }
     }
 
 
 
-    slog("OK Number 1 %f", distArray[0 + 4].distanceValue);
-
+    slog("OK Number unvisted list %i", unvistedList->count);
+    //OK UP TO HERE
     TileInfo* u;
     TileInfo* possibleU;
     int possibleUX;
     int possibleUY;
     int uY;
     int uX;
+    numberAdded = 0;
+    int val;
+    val = 0;
+
+  /*  if (Students->count > 0) {
+        for (indexer = Students->count - 1; indexer >= 0; indexer--) {
+            normalStudent = gfc_list_get_nth(Students, indexer);
+            if (!normalStudent)continue;
+            if (normalStudent->markedForDestruction > 0) {
+                removeStudent(Students, normalStudent);
+            }
+        }
+    } */
 
     while (unvistedList->count > 0)
     {
         u = NULL;
+        val++;
         int k;
-        for (k = 0; k < unvistedList->count; k++) 
+        for (k = unvistedList->count - 1; k >= 0; k--) 
         {
             //k is possible u
             possibleU = gfc_list_get_nth(unvistedList, k);
@@ -503,22 +539,23 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
 
             possibleUX = possibleU->coordinates.x;
             possibleUY = possibleU->coordinates.y;
-                  
+            slog("OK Number 2: k val: %i | %i coords %i %i", k, val, possibleUX, possibleUY);
 
 
             if (u == NULL)
             {
-               // slog("OK Number 2");
 
                 u = gfc_list_get_nth(unvistedList, k);
                 uY = u->coordinates.y;
                 uX = u->coordinates.x;
+
+
             }
             else if (distArray[(possibleUY * (int)graph_manager.graphSizeX) +
                 possibleUX].distanceValue <
                 distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue) 
             {
-              //  slog("OK Number 2.5");
+                slog("OK Number 2.5");
 
                 u = gfc_list_get_nth(unvistedList, k);
                 uY = u->coordinates.y;
@@ -526,7 +563,10 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
             }
         }
 
-        if (uX == dstTile.coordinates.x && uY == dstTile.coordinates.y) {
+        if (uX == dstTile.coordinates.x && uY == dstTile.coordinates.y) 
+        {
+            slog("once more");
+            slog("BREAKING OUT %i %i", uX, uY);
             break;
         }
 
@@ -551,16 +591,18 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
                     gf2d_draw_circle(graph_to_world_pos(currentNeighbour->coordinates.x, currentNeighbour->coordinates.y), 5, gfc_color(255, 0, 0, 255));
                 }
             }*/
+            slog("Number X Coords %i %i", uX, uY);
             if (u->neighbours[nodeNeighbourIndex] != NULL)
             {
                 currentNeighbour = u->neighbours[nodeNeighbourIndex];
                 currentNeighbourX = currentNeighbour->coordinates.x;
                 currentNeighbourY = currentNeighbour->coordinates.y;
                 nAlt = GetWeightForTileIndex(currentNeighbour->tileFrame);
+                slog("Number 3 %i tile num %i", currentNeighbour->tileFrame, val);
                 //distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue
-               // slog("OK Number 3");
 
                 alt = distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue + nAlt;
+                slog("OK Number 3 %f", alt);
 
                 if (alt < distArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)].distanceValue)
                 {
@@ -576,14 +618,71 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
                     prevItem.tileInfo = currentNeighbour;
 
                     prevArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)] = prevItem;
+                    slog("OK Number 4");
                     //remap it
                 }
               //  slog("OK Number 4");
             }
         }
     } 
+   
+    int debugI;
+    int debugJ;
+    float finalVal;
+    Vector2D vec;
+    for (debugJ = 0; debugJ < graph_manager.graphSizeY; debugJ++) 
+    {       
+        for (debugI = 0; debugI < graph_manager.graphSizeX; debugI++)
+        {
+            /*vec = distArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].coordinates;
+            finalVal = distArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].distanceValue;
+            slog("hello %f %f And dist val: %f", vec.x, vec.y, finalVal);
+            vec = distArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].tileInfo->coordinates;
+            slog("double check %f %f And dist val: %f", vec.x, vec.y, finalVal);*/
+
+            vec = prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].currentCoordinates;
+            slog("hello %f %f", vec.x, vec.y);
+            if (prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].prevNode != NULL) 
+            {
+                vec = prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].prevNode->coordinates;
+                slog("PREVIOUS NODE WAS %f %f", vec.x, vec.y);
+            }
+            vec = prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].tileInfo->coordinates;
+            slog("double check %f %f", vec.x, vec.y);
+
+        }      
+
+    }
+
+    vec = distArray[(3 * (int)graph_manager.graphSizeX + 3)].coordinates;
+    slog("hello final %f %f", vec.x, vec.y);
 
 
+
+    List* currentPath;
+    slog("OK Number 5");
+    currentPath = gfc_list_new();
+    slog("OK Number 6");
+    TileInfo* curr = &dstTile;
+    int currX;
+    int currY;
+    currX = curr->coordinates.x;
+    currY = curr->coordinates.y;
+    while (prevArray[(currY * (int)graph_manager.graphSizeX + currX)].prevNode != NULL)
+    {
+        slog("OK Number 7");
+
+        gfc_list_append(currentPath, curr);
+        slog("OK Number 8");
+        curr = prevArray[(currY * (int)graph_manager.graphSizeX + currX)].prevNode;
+        currX = curr->coordinates.x;
+        currY = curr->coordinates.y;
+        slog("OK Number 9");
+
+        //slog("OK Number 5");
+
+    }
+  
 }
 
 
