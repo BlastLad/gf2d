@@ -5,6 +5,7 @@
 #include "UniversalData.h"
 #include "Piper.h"
 #include "Upgrades.h"
+#include "AudioManager.h"
 void bubbles_think(Entity* self);
 
 void bubbles_update(Entity* self);
@@ -107,6 +108,7 @@ void bubbles_think(Entity* self) {
 					if (vector2d_distance_between_less_than(self->position, normalStudent->position, 34.0)) {
 
 						normalStudent->markedForDestruction = 2;//also deal damage
+						play_sound("audio/StudentEaten.mp3", 2);
 					}
 					//normal_student_remove_from_list(Students, normalStudent);
 				}
@@ -202,6 +204,7 @@ void bubbles_update(Entity* self)
 			self->startFrame = 3;
 			self->endFrame = 7;
 			self->markedForDestruction = 0;
+			play_sound("audio/MagicReactive.mp3", 3);
 		}
 	}
 }

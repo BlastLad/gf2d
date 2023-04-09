@@ -2,6 +2,7 @@
 #include "simple_logger.h"
 #include "DynamicBody.h"
 #include "SleepSpell.h"
+#include "AudioManager.h"
 
 void sleep_spell_think(Entity* self);
 
@@ -81,6 +82,7 @@ int sleep_spell_world_collision(DynamicBody* self, List* collision)
 					self->entityAttached->markedForDestruction = 1;
 					ent->startFrame = 0;
 					ent->endFrame = 2;
+					play_sound("audio/GamingSouns.mp3", 1);
 					return 1;
 				}
 			}
@@ -127,6 +129,7 @@ int sleep_spell_collision(DynamicBody* self, List* collision)
 
 					ent->startFrame = 3;
 					ent->endFrame = 7;
+					play_sound("audio/GamingSouns.mp3", 1);				
 				}
 			}
 			//slog("Student collided %i", self->entityAttached->body.cliplayer);

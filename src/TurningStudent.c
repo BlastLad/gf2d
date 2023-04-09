@@ -4,6 +4,7 @@
 #include "NormalStudent.h"
 #include "DynamicBody.h"
 #include "TileMap.h"
+#include "AudioManager.h"
 
 
 void turning_student_think(Entity* self);
@@ -121,8 +122,11 @@ int turning_on_collision(DynamicBody* self, List* collision) {
 		if (other->collisionTag == Furniture) {
 
 			//slog("Student collided %i", other->collisionTag);
-			if (self->entityAttached->uniqueEntityTypeID == 3)
+			if (self->entityAttached->uniqueEntityTypeID == 3) 
+			{
 				self->entityAttached->markedForDestruction = 1;
+				play_sound("audio/StudentEaten.mp3", 2);
+			}
 			return 1;
 		}
 	}

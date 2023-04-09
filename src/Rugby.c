@@ -2,6 +2,7 @@
 #include "Rugby.h"
 #include "TileMap.h"
 #include "DynamicBody.h"
+#include "AudioManager.h"
 
 void rugby_think(Entity* self);
 
@@ -103,6 +104,7 @@ void rugby_update(Entity* self)
 			self->startFrame = 13;
 			self->endFrame = 15;
 			self->markedForDestruction = 0;
+			play_sound("audio/MagicReactive.mp3", 3);
 		}
 	}
 }

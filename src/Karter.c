@@ -2,6 +2,7 @@
 #include "Karter.h"
 #include "TileMap.h"
 #include "DynamicBody.h"
+#include "AudioManager.h"
 
 void karter_think(Entity* self);
 
@@ -92,6 +93,8 @@ void karter_update(Entity* self)
 			self->startFrame = 0;
 			self->endFrame = 4;
 			self->markedForDestruction = 0;
+			play_sound("audio/MagicReactive.mp3", 3);
+
 		}
 	}
 	else {
