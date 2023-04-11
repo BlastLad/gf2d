@@ -27,9 +27,9 @@ Entity* nervous_student_new(Vector2D position, int gridPositionX, int gridPositi
 	ent->index = 0;
 
 
-		ent->sprite = gf2d_sprite_load_all("images/NervousStudent.png",
-			32,
-			32,
+		ent->sprite = gf2d_sprite_load_all("images/NervousStudentSmall.png",
+			16,
+			16,
 			4,
 			0);
 		ent->startFrame = 0;
@@ -38,7 +38,7 @@ Entity* nervous_student_new(Vector2D position, int gridPositionX, int gridPositi
 
 	ent->think = Nervous_student_think;
 	ent->update = Nervous_student_update;
-	ent->drawOffset = vector2d(16, 16);
+	ent->drawOffset = vector2d(8, 8);
 	ent->speed = .5;
 
 	//collion stuff

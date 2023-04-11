@@ -36,14 +36,14 @@ Entity* normal_student_new(Vector2D position, int gridPositionX, int gridPositio
 	Entity* ent;
 	ent = entity_new();
 	if (!ent)return NULL;
-	ent->sprite = gf2d_sprite_load_all("images/BeWitched!FemaleStudentWalk.png",
-		32,
-		32,
+	ent->sprite = gf2d_sprite_load_all("images/BeWitched!FemaleStudentWalkSmall.png",
+		16,
+		16,
 		4,
 		0);
 	ent->think = normal_student_think;
 	ent->update = normal_student_update;
-	ent->drawOffset = vector2d(16, 16);
+	ent->drawOffset = vector2d(8, 8);
 	ent->speed = .5;
 
 	//collion stuff
