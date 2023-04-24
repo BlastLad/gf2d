@@ -37,6 +37,7 @@ Entity* Rugby_New(Vector2D position, Vector2D gridPosition)
 	ent->body.team = 3;
 	ent->body.touch = rugby_on_collision;
 	ent->body.entityAttached = ent;
+	ent->typeNum = 2;
 	//ent->body.worldclip = rugby_on_collision;
 	ent->tag = Furniture;
 	vector2d_copy(ent->body.position, position);

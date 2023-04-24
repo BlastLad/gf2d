@@ -95,15 +95,114 @@ void graph_manager_init(Uint32 max)
 
 }
 
+SJson* map_getter(List* furniture)
+{
+    SJson* innerJson = sj_object_new();
+    SJson* arrayw = sj_array_new();
+    SJson* mapLayout = sj_array_new();
+    SJson* furnitureLayout = sj_array_new();
+
+    if (!innerJson) {
+        slog("its fucked");
+        return NULL;
+    }
+
+    int levelval;
+    levelval = 1;
+    
+    sj_object_insert(innerJson, "name", sj_new_str("testerLevel"));
+    sj_object_insert(innerJson, "tileSet", sj_new_str("images/CarpetTileSet.png"));
+    sj_object_insert(innerJson, "tileFPL", sj_new_int(3));
+
+    
+    sj_array_append(arrayw, sj_new_int(32));
+    sj_array_append(arrayw, sj_new_int(32));
+    sj_object_insert(innerJson, "tileSize", arrayw);
+    int c, d;
+    c = graph_manager.graphSizeY;
+    d = graph_manager.graphSizeX;
+    for (int i = 0; i < c; i++) 
+    {
+        SJson* currentRow = sj_array_new();
+        for (int j = 0; j < d; j++) 
+        {
+            int frameNum;
+            frameNum = graph_manager.graph[(i * (int)graph_manager.graphSizeX) + j].tileFrame;
+            sj_array_append(currentRow, sj_new_int(frameNum));
+        }
+        sj_array_append(mapLayout, currentRow);
+    }
+
+    for (int ii = 0; ii < gfc_list_get_count(furniture); ii++)
+    {
+        SJson* currentItem = sj_array_new();
+        Entity* ent;
+        ent = gfc_list_get_nth(furniture, ii);
+        int newX;
+        int newY, typeNum;
+        newX = ent->currentGridPosition.x;
+        newY = ent->currentGridPosition.y;
+        typeNum = ent->typeNum;
+        slog("Cheking ent things x %i, y %i", newX, newY);
+        sj_array_append(currentItem, sj_new_int(typeNum));
+        sj_array_append(currentItem, sj_new_int(newX));
+        sj_array_append(currentItem, sj_new_int(newY));
+
+        if (typeNum == 3) 
+        {
+            newX = ent->targetGridPosition.x;
+            newY = ent->targetGridPosition.y;
+            sj_array_append(currentItem, sj_new_int(newX));//targets
+            sj_array_append(currentItem, sj_new_int(newY));
+        }
+
+        sj_array_append(furnitureLayout, currentItem);
+    }
+
+
+
+
+    sj_object_insert(innerJson, "tileMapArray", mapLayout);
+    sj_object_insert(innerJson, "furnitureLayout", furnitureLayout);
+
+
+    return innerJson;
+
+}
+
+void level_save(const char* filename, List* furniture)
+{
+    SJson* json;
+    SJson* levelJson;  
+
+    json = sj_object_new();
+    levelJson = sj_new();
+
+    if (!json || !levelJson) {
+        slog("WARNING ITS BAD");
+        return;
+    }
+
+    levelJson = map_getter(furniture);
+    sj_object_insert(json, "level", levelJson);
+    sj_save(json, "config/testSave.tilemap");
+
+
+    sj_free(json);
+  //  level = level_get_active_level();
+   // if (!filename)return NULL;
+   // json = sj_load(filename);
+    //if (!json)return NULL;
+}
 
 Level* level_load(const char* filename)
 {
     int tile;
-    int i, c;
-    int j, d;
+    int i, c, enemyC;
+    int j, d, enemyD;
     int tileFPL;
     const char* str;
-    SJson* json, * lj, * list, * row, * item;
+    SJson* json, * lj, * list, * row, * item, * enemyList, * enemyRow;
     Level* level;
     if (!filename)return NULL;
     json = sj_load(filename);
@@ -133,7 +232,7 @@ Level* level_load(const char* filename)
         level->tileSet = gf2d_sprite_load_all(str, (Sint32)level->tileSize.x, (Sint32)level->tileSize.y, tileFPL, 1);
     }
     list = sj_object_get_value(lj, "tileMapArray");
-    c = sj_array_get_count(list);
+    c = sj_array_get_count(list);    
     row = sj_array_get_nth(list, 0);
     d = sj_array_get_count(row);
     if ((c * d) == 0)
@@ -216,9 +315,105 @@ Level* level_load(const char* filename)
         }
     }
     
+    level_build(level);    
     sj_free(json);
-    level_build(level);
+
     return level;
+}
+
+Entity* SpawnEnemy(int enemyVal, int gridX, int gridY, int tarX, int tarY)
+{
+    switch (enemyVal)
+    {
+    case 1:
+        return Bubbles_New(graph_to_world_pos(gridX, gridY), vector2d(gridX, gridY), vector2d(gridX, gridY));
+        break;
+    case 2:
+        return Rugby_New(graph_to_world_pos(gridX, gridY), vector2d(gridX, gridY));
+        break;
+    case 3:
+        return karter_new(graph_to_world_pos(gridX, gridY), gridX, gridY, tarX, tarY);
+        break;
+    default:
+        break;
+    }
+}
+
+void ChangeTile(int prev_i_row, int prev_j_column, int newTileIndex) 
+{
+    int i;
+    int j;
+
+    i = prev_i_row;
+    j = prev_j_column;
+    int hello;
+    hello = activeLevel->tileMap[(i * (int)activeLevel->mapSize.x) + j];
+    slog("tile was %i hello", hello);
+
+   activeLevel->tileMap[(i * (int)activeLevel->mapSize.x) + j] = newTileIndex;
+    
+   hello = activeLevel->tileMap[(i * (int)activeLevel->mapSize.x) + j];
+   graph_manager.graph[(i * (int)activeLevel->mapSize.x) + j].tileFrame = newTileIndex;
+   slog("tile is now %i hello", hello);
+
+
+  level_art_free(activeLevel);
+  
+}
+
+void level_art_free(Level* level)
+{
+
+    int i, j;
+
+    if (level->tileLayer)gf2d_sprite_free(level->tileLayer);
+    level->tileLayer = gf2d_sprite_new();
+    if (!level->tileLayer)
+    {
+        slog("failed to create sprite for tileLayer");
+        return;
+    }
+
+    if (level->tileLayer->surface)SDL_FreeSurface(level->tileLayer->surface);
+    //create a surface the size we need it
+    level->tileLayer->surface = gf2d_graphics_create_surface(level->tileSize.x * level->mapSize.x, level->tileSize.y * level->mapSize.y);
+    if (!level->tileLayer->surface)
+    {
+        slog("failed to create tileLayer surface");
+        return;
+    }
+    //make sure the surface is compatible with our graphics settings
+    level->tileLayer->surface = gf2d_graphics_screen_convert(&level->tileLayer->surface);
+    if (!level->tileLayer->surface)
+    {
+        slog("failed to create surface for tileLayer");
+        return;
+    }
+
+    for (j = 0; j < graph_manager.graphSizeY; j++)//j is row
+    {
+        for (i = 0; i < graph_manager.graphSizeX; i++)// i is column
+        {
+            if (level->tileMap[(j * (int)level->mapSize.x) + i] <= 0)continue;//skip zero
+            gf2d_sprite_draw_to_surface(
+                level->tileSet,
+                vector2d(i * level->tileSize.x, j * level->tileSize.y),
+                NULL,
+                NULL,
+                get_graph_node(i, j).tileFrame - 1,
+                level->tileLayer->surface);
+        }
+    }
+    //convert it to a texture
+    level->tileLayer->texture = SDL_CreateTextureFromSurface(gf2d_graphics_get_renderer(), level->tileLayer->surface);
+    SDL_SetTextureBlendMode(level->tileLayer->texture, SDL_BLENDMODE_BLEND);
+    SDL_UpdateTexture(level->tileLayer->texture,
+        NULL,
+        level->tileLayer->surface->pixels,
+        level->tileLayer->surface->pitch);
+    level->tileLayer->frame_w = level->tileLayer->surface->w;
+    level->tileLayer->frame_h = level->tileLayer->surface->h;
+    level->tileLayer->frames_per_line = 1;
 }
 
 TileInfo *tileInfo_new(int xCoord, int yCoord, int tileNum, int mapSize) {
@@ -900,6 +1095,8 @@ void level_free(Level* level)
     }
     free(level);
 }
+
+
 
 //adds the body to the space buckets
 void level_add_entity(Level* level, Entity* entity) 

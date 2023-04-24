@@ -40,6 +40,10 @@ typedef struct
 
 GraphManager* get_graph();
 
+Entity* SpawnEnemy(int enemyVal, int gridX, int gridY, int tarX, int tarY);
+
+void level_save(const char* filename, List* furniture);
+
 TileInfo get_graph_node(int x, int y);
 
 void PathFinding(int srcX, int srcY, int destX, int destY);
@@ -78,6 +82,10 @@ void level_set_active_level(Level* level);
  * @return NULL on not found or other error, or the loaded level
  */
 Level* level_load(const char* filename);
+
+void level_art_free(Level* level);
+
+void ChangeTile(int prev_i_row, int prev_j_column, int newTileIndex);
 
 /**
  * @brief draw a level

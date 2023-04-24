@@ -58,6 +58,7 @@ typedef struct Entity_S {
 
 	int markedForDestruction;
 	int counter;
+	int typeNum;
 
 	float speed;
 	float timer;

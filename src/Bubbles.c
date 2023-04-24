@@ -56,6 +56,7 @@ Entity* Bubbles_New(Vector2D position, Vector2D gridPosition, Vector2D attackTar
 
 	ent->startFrame = 3;
 	ent->endFrame = 7;
+	ent->typeNum = 1;
 	slog("2");
 	//entity method init
 	ent->think = bubbles_think;

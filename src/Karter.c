@@ -43,7 +43,7 @@ Entity* karter_new(Vector2D position, int gridPositionX, int gridPositionY, int 
 	vector2d_copy(ent->body.position, position);
 	level_add_entity(level_get_active_level(), ent);
 	//collision stuff end
-
+	ent->typeNum = 3;
 	ent->startFrame = 0;
 	vector2d_copy(ent->position, position);
 	ent->endFrame = 4;
