@@ -64,6 +64,7 @@ int main(int argc, char* argv[])
     Entity* turretEntity;//make it pointer probs for all this shit
     List* Students;
     List* aStarPath;
+    List* powerUpList;
     List* AllFurnitureList;
     Entity* normalStudent;
     Entity* furnitureItem;
@@ -112,7 +113,7 @@ int main(int argc, char* argv[])
     totalEnemyFrames = 4;
     level_set_active_level(tileMap);
     set_current_level_num(1);
-    set_current_level_totalStudents(20);
+    set_current_level_totalStudents(2);
     set_current_level_remainingStudents(get_current_level_totalStudents());
 
 
@@ -146,19 +147,22 @@ int main(int argc, char* argv[])
     aStarPath = gfc_list_new();
     set_path_list(aStarPath);
 
+    powerUpList = gfc_list_new();
+    set_powerup_list(powerUpList);
+
     if (editorMode == 0) {
 
         turretEntity = Turret_Student_New(vector2d(7, 7), 14, 7);
 
-        Mix_Base_New(graph_to_world_pos(1, 2), vector2d(1, 2));
-        Shadow_Clone_PickUp_New(graph_to_world_pos(1, 4), vector2d(1, 4));
-        Emerald_PickUp_New(graph_to_world_pos(1, 8), vector2d(1, 8));
-        Spellbook_New(graph_to_world_pos(1, 6), vector2d(1, 6));
+      // Mix_Base_New(graph_to_world_pos(1, 2), vector2d(1, 2));
+        //Shadow_Clone_PickUp_New(graph_to_world_pos(1, 4), vector2d(1, 4));
+       // Emerald_PickUp_New(graph_to_world_pos(1, 8), vector2d(1, 8));
+        //Spellbook_New(graph_to_world_pos(1, 6), vector2d(1, 6));
 
-        Mix_Upgrade_New(graph_to_world_pos(16, 2), vector2d(16, 2));
-        Dual_Cast_Upgrade_New(graph_to_world_pos(16, 3), vector2d(16, 3));
-        Max_Spellbook_New(graph_to_world_pos(16, 4), vector2d(16, 4));
-        Health_Pot_New(graph_to_world_pos(16, 5), vector2d(16, 5));
+        //Mix_Upgrade_New(graph_to_world_pos(16, 2), vector2d(16, 2));
+        //Dual_Cast_Upgrade_New(graph_to_world_pos(16, 3), vector2d(16, 3));
+        //Max_Spellbook_New(graph_to_world_pos(16, 4), vector2d(16, 4));
+        //Health_Pot_New(graph_to_world_pos(16, 5), vector2d(16, 5));
         play_music(45);
 
     }
@@ -178,7 +182,7 @@ int main(int argc, char* argv[])
 
     int numOfStudents = get_current_level_totalStudents();
 
-   
+    GetPiperData()->powerUpCollected = 1;
     
     int hub;
     hub = 0;
@@ -229,9 +233,12 @@ int main(int argc, char* argv[])
                 continue;
             }
 
-            mf += 0.1;
-            mh += 0.1;
-            mp += 0.1;
+            if (GetPiperData()->powerUpCollected == 1) 
+            {
+                mf += 0.1;
+                mh += 0.1;
+                mp += 0.1;
+            }
 
             //--------------------EDITOR CODE----------------------------------------------------
             if (editorMode == 1)
@@ -434,19 +441,47 @@ int main(int argc, char* argv[])
                     }
                     else
                     {
-                        if (piperDataPointer->currentHealth == piperDataPointer->maxHealth)
-                        {
-                            Spellbook_New(graph_to_world_pos(8, 6), vector2d(8, 6));
-                            //spawn spell book
+                        if (get_current_level_remainingStudents() <= 0) {
+
+                            if (piperDataPointer->currentHealth == piperDataPointer->maxHealth)
+                            {
+                                Spellbook_New(graph_to_world_pos(8, 6), vector2d(8, 6));
+                                //spawn spell book
+                            }
+
+                            Health_Pot_New(graph_to_world_pos(10, 6), vector2d(10, 6));
+
+                            //spawn health pot
+                            set_current_level_num(get_current_level_num() + 1);
+                            set_current_level_totalStudents(get_current_level_totalStudents() + 4);
+                            set_current_level_remainingStudents(get_current_level_totalStudents());
+
+
+
+                            if (GetPiperData()->mixAbility == 0)
+                                gfc_list_append(powerUpList, Mix_Base_New(graph_to_world_pos(1, 2), vector2d(1, 2)));
+                            else if (GetPiperData()->mixingUpgrade == 0)
+                                gfc_list_append(powerUpList, Mix_Upgrade_New(graph_to_world_pos(1, 2), vector2d(1, 2)));
+
+                            if (GetPiperData()->shadowClone == 0)
+                                gfc_list_append(powerUpList, Shadow_Clone_PickUp_New(graph_to_world_pos(1, 4), vector2d(1, 4)));
+
+                            if (GetPiperData()->emeraldAbility == 0)
+                                gfc_list_append(powerUpList, Emerald_PickUp_New(graph_to_world_pos(1, 8), vector2d(1, 8)));
+
+                            if (GetPiperData()->sleepUpgrade == 0)
+                                gfc_list_append(powerUpList, Dual_Cast_Upgrade_New(graph_to_world_pos(16, 3), vector2d(16, 3)));
+
+                            if (GetPiperData()->maxSpellBooks == 1)
+                                gfc_list_append(powerUpList, Max_Spellbook_New(graph_to_world_pos(16, 4), vector2d(16, 4)));
+
+                            GetPiperData()->powerUpCollected = 0;
+                            //if (GetPiperData()->powerUpCollected == 1)
+                            //{
+                                numOfStudents = get_current_level_totalStudents();
+                            //}
                         }
-
-                        Health_Pot_New(graph_to_world_pos(10, 6), vector2d(10, 6));
-
-                        //spawn health pot
-                        set_current_level_num(get_current_level_num());
-                        set_current_level_totalStudents(get_current_level_totalStudents() + 4);
-                        set_current_level_remainingStudents(get_current_level_totalStudents());
-                        numOfStudents = get_current_level_totalStudents();
+                        
                     }
                 }
 

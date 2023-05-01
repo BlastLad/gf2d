@@ -3,6 +3,7 @@
 #include "TileMap.h"
 #include "DynamicBody.h"
 #include "Piper.h"
+#include "UniversalData.h"
 
 void Emerald_PickUp_update(Entity* self);
 
@@ -37,6 +38,7 @@ Entity* Emerald_PickUp_New(Vector2D position, Vector2D gridPosition)
 	ent->body.entityAttached = ent;
 	ent->body.touch = Emerald_PickUp_collision;
 	ent->update = Emerald_PickUp_update;
+	ent->counter = 12;
 	ent->tag = PlayerHazard;
 	ent->shape.tag = Trigger;
 	ent->shape.identifier = PlayerHazard;
@@ -55,11 +57,20 @@ int Emerald_PickUp_collision(DynamicBody* self, List* collision)
 {
 	int i, selfIndex;
 	Collision* other;
+	
 
 
 	for (i = 0; i < collision->count; i++)
 	{
 		other = (Collision*)gfc_list_get_nth(collision, i);
+		Entity* selfEnt;
+		selfEnt = self->entityAttached;
+
+		if (GetPiperData()->currency < selfEnt->counter) {
+			return 0;
+		}
+
+
 		if (!other) continue;
 		//
 		//slog("Student collided %i", self->entityAttached->tag);
@@ -79,6 +90,8 @@ int Emerald_PickUp_collision(DynamicBody* self, List* collision)
 						piperDataPointer = (struct PiperData*)ent->data;
 						piperDataPointer->emeraldAbility = 1;
 						self->entityAttached->markedForDestruction = 1;
+						int value = selfEnt->counter;
+						OnPowerUpCollect(value);
 						return 1;
 					}
 				}

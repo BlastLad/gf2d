@@ -12,8 +12,11 @@ List* get_student_list();
 void set_student_list(List* pointer);
 void set_path_list(List* pointer);
 List* get_path_list();
+List* get_powerup_list();
+List* set_powerup_list(List* pointer);
 int checkEmeraldPoolStatus();
 Entity* GetEmeraldPool(int index);
+int OnPowerUpCollect(int value);
 
 void SetEmeraldPool(Entity* pool);
 

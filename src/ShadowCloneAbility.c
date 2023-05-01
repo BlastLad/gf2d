@@ -3,6 +3,7 @@
 #include "TileMap.h"
 #include "DynamicBody.h"
 #include "Piper.h"
+#include "UniversalData.h"
 
 void Shadow_Clone_PickUp_update(Entity* self);
 
@@ -40,6 +41,7 @@ Entity* Shadow_Clone_PickUp_New(Vector2D position, Vector2D gridPosition)
 	ent->tag = PlayerHazard;
 	ent->shape.tag = Trigger;
 	ent->shape.identifier = PlayerHazard;
+	ent->counter = 10;
 
 	vector2d_copy(ent->position, position);
 	vector2d_copy(ent->currentGridPosition, gridPosition);
@@ -60,6 +62,14 @@ int Shadow_Clone_PickUp_collision(DynamicBody* self, List* collision)
 	for (i = 0; i < collision->count; i++)
 	{
 		other = (Collision*)gfc_list_get_nth(collision, i);
+
+		Entity* selfEnt;
+		selfEnt = self->entityAttached;
+
+		if (GetPiperData()->currency < selfEnt->counter) {
+			return 0;
+		}
+
 		if (!other) continue;
 		//
 		//slog("Student collided %i", self->entityAttached->tag);
@@ -79,6 +89,8 @@ int Shadow_Clone_PickUp_collision(DynamicBody* self, List* collision)
 						piperDataPointer = (struct PiperData*)ent->data;
 						piperDataPointer->shadowClone = 1;
 						self->entityAttached->markedForDestruction = 1;
+						int value = selfEnt->counter;
+						OnPowerUpCollect(value);
 						return 1;
 					}
 				}

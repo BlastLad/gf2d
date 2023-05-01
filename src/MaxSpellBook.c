@@ -3,6 +3,7 @@
 #include "TileMap.h"
 #include "DynamicBody.h"
 #include "Piper.h"
+#include "UniversalData.h"
 
 void MaxBook_update(Entity* self);
 
@@ -40,6 +41,7 @@ Entity* Max_Spellbook_New(Vector2D position, Vector2D gridPosition)
 	ent->tag = PlayerHazard;
 	ent->shape.tag = Trigger;
 	ent->shape.identifier = PlayerHazard;
+	ent->counter = 5;
 
 	vector2d_copy(ent->position, position);
 	vector2d_copy(ent->currentGridPosition, gridPosition);
@@ -56,6 +58,12 @@ int MaxBook_collision(DynamicBody* self, List* collision)
 	int i, selfIndex;
 	Collision* other;
 
+	Entity* selfEnt;
+	selfEnt = self->entityAttached;
+
+	if (GetPiperData()->currency < selfEnt->counter) {
+		return 0;
+	}
 
 	for (i = 0; i < collision->count; i++)
 	{
@@ -79,6 +87,8 @@ int MaxBook_collision(DynamicBody* self, List* collision)
 						piperDataPointer = (struct PiperData*)ent->data;
 						piperDataPointer->maxSpellBooks += 1;
 						self->entityAttached->markedForDestruction = 1;
+						int value = selfEnt->counter;
+						OnPowerUpCollect(value);
 						return 1;
 					}
 				}

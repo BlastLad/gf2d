@@ -23,6 +23,7 @@ typedef struct
 	int emeraldAbility;
 	int currency;
 	int oddsOnly;
+	int powerUpCollected;
 
 }PiperData;
 

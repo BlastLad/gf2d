@@ -1,4 +1,6 @@
 #include "UniversalData.h"
+#include "Piper.h"
+#include "TileMap.h"
 
 static int remainingStudents;
 static int currentLevel;
@@ -10,7 +12,14 @@ List* pointerToPathList;
 Entity* emeraldPool1;
 static int currentPools;
 List* carpetTileList;
+List* powerUpList;
 
+List* get_powerup_list() {
+	return powerUpList;
+}
+List* set_powerup_list(List* pointer) {
+	powerUpList = pointer;
+}
 
 void set_path_list(List* pointer) {
 	pointerToPathList = pointer;
@@ -59,6 +68,40 @@ int checkEmeraldPoolStatus()
 	}
 }
 
+
+int OnPowerUpCollect(int value)
+{
+	int indexer;
+	Entity* normalStudent;
+
+	if (powerUpList->count > 0) {
+		for (indexer = powerUpList->count - 1; indexer >= 0; indexer--) {
+			normalStudent = gfc_list_get_nth(powerUpList, indexer);
+			if (!normalStudent)continue;
+			
+			normalStudent->markedForDestruction = 1;
+
+				gfc_list_delete_data(powerUpList, normalStudent);
+			
+		}
+	}
+
+
+
+	PiperData* piperDataPointer;
+	piperDataPointer = GetPiperData();
+
+	piperDataPointer->currency -= value;
+
+	if (piperDataPointer->currency <= 0) {
+		piperDataPointer->currency = 0;
+	}
+
+	piperDataPointer->powerUpCollected = 1;
+	
+
+	return 0;
+}
 
 List* get_student_list() {
 	return pointerToStudentList;
