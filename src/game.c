@@ -18,6 +18,7 @@
 #include "gui.h"
 #include "Upgrades.h"
 #include "AudioManager.h"
+#include "TurretStudent.h"
 //#include "../gfc/include/gfc_pak.h"
 
 static int onTitle = 1;
@@ -61,6 +62,7 @@ int main(int argc, char* argv[])
     //NEW
     Entity* playerEntity;//make it pointer probs for all this shit
     List* Students;
+    List* aStarPath;
     List* AllFurnitureList;
     Entity* normalStudent;
     Entity* furnitureItem;
@@ -124,7 +126,7 @@ int main(int argc, char* argv[])
 
 
     playerEntity = piper_entity_new(graph_to_world_pos(9, 9));
-
+    
 
     initer("config/testSave.tilemap", AllFurnitureList);
    // furnitureItem = SpawnEnemy(2, 7, 9, 0, 0);
@@ -164,6 +166,10 @@ int main(int argc, char* argv[])
 
     Students = gfc_list_new();
     set_student_list(Students);
+
+    aStarPath = gfc_list_new();
+    set_path_list(aStarPath);
+
     int numOfStudents = get_current_level_totalStudents();
 
    
@@ -441,6 +447,7 @@ int main(int argc, char* argv[])
                 if (mh >= 40.0) {
                     mh = 0;
                     if (hub == 0) {
+                        Turret_Student_New(vector2d(7, 7), 14, 7);
                         // PathFinding(7, 7, 7, 10);
 
                         hub = 1;

@@ -24,7 +24,8 @@ enum EntityTags
 	Projectile = 4,
 	NonsolidFurniture = 5,
 	Blank = 6,
-	PlayerHazard = 7
+	PlayerHazard = 7,
+	Turret,
 };
 /**
 *@brief the structure of an entity

@@ -46,7 +46,7 @@ void level_save(const char* filename, List* furniture);
 
 TileInfo get_graph_node(int x, int y);
 
-void PathFinding(int srcX, int srcY, int destX, int destY);
+List* PathFinding(int srcX, int srcY, int destX, int destY);
 
 void get_next_carpet_tile(float x, float y, Entity* ent);
 
@@ -84,6 +84,7 @@ void level_set_active_level(Level* level);
 Level* level_load(const char* filename);
 
 void level_art_free(Level* level);
+
 
 void ChangeTile(int prev_i_row, int prev_j_column, int newTileIndex);
 

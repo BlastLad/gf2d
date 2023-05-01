@@ -5,11 +5,20 @@ static int currentLevel;
 static int totalStudents;
 
 List* pointerToStudentList;
+List* pointerToPathList;
 
 Entity* emeraldPool1;
 static int currentPools;
 List* carpetTileList;
 
+
+void set_path_list(List* pointer) {
+	pointerToPathList = pointer;
+}
+
+List* get_path_list() {
+	return pointerToPathList;
+}
 
 List* getCarpetTileList() {
 	return carpetTileList;

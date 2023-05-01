@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "Space.h";
 #include "TileMap.h"
+#include "UniversalData.h"
 
 void level_build(Level* level);
 
@@ -605,7 +606,7 @@ typedef struct
 }prev;
 
 
-void PathFinding(int srcX, int srcY, int destX, int destY) 
+List* PathFinding(int srcX, int srcY, int destX, int destY) 
 {
     TileInfo srcTile; 
     srcTile = get_graph_node(srcX, srcY);
@@ -652,7 +653,7 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
     distArray[(srcY * (int)graph_manager.graphSizeX) + srcX] = distanceItem;
     prevArray[(srcY * (int)graph_manager.graphSizeX) + srcX] = prevItem;
     
-    slog("graph man max %i", graph_manager.graph_max);
+  //  slog("graph man max %i", graph_manager.graph_max);
     int numberAdded = 1;
     //gfc_list_append(distList, &distanceItem);
    // gfc_list_append(prevList, &prevItem);
@@ -666,7 +667,7 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
             hjx = tobeAppend->coordinates.x;
             hjy = tobeAppend->coordinates.y;
             
-            slog("OK Number 1 %i %i", hjx, hjy);
+         //   slog("OK Number 1 %i %i", hjx, hjy);
 
             if (tobeAppend->coordinates.x == srcX && tobeAppend->coordinates.y == srcY) 
             {
@@ -699,7 +700,7 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
 
 
 
-    slog("OK Number unvisted list %i", unvistedList->count);
+  //  slog("OK Number unvisted list %i", unvistedList->count);
     //OK UP TO HERE
     TileInfo* u;
     TileInfo* possibleU;
@@ -734,7 +735,7 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
 
             possibleUX = possibleU->coordinates.x;
             possibleUY = possibleU->coordinates.y;
-            slog("OK Number 2: k val: %i | %i coords %i %i", k, val, possibleUX, possibleUY);
+         //   slog("OK Number 2: k val: %i | %i coords %i %i", k, val, possibleUX, possibleUY);
 
 
             if (u == NULL)
@@ -750,7 +751,7 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
                 possibleUX].distanceValue <
                 distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue) 
             {
-                slog("OK Number 2.5");
+            //    slog("OK Number 2.5");
 
                 u = gfc_list_get_nth(unvistedList, k);
                 uY = u->coordinates.y;
@@ -786,18 +787,18 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
                     gf2d_draw_circle(graph_to_world_pos(currentNeighbour->coordinates.x, currentNeighbour->coordinates.y), 5, gfc_color(255, 0, 0, 255));
                 }
             }*/
-            slog("Number X Coords %i %i", uX, uY);
+          //  slog("Number X Coords %i %i", uX, uY);
             if (u->neighbours[nodeNeighbourIndex] != NULL)
             {
                 currentNeighbour = u->neighbours[nodeNeighbourIndex];
                 currentNeighbourX = currentNeighbour->coordinates.x;
                 currentNeighbourY = currentNeighbour->coordinates.y;
                 nAlt = GetWeightForTileIndex(currentNeighbour->tileFrame);
-                slog("Number 3 %i tile num %i", currentNeighbour->tileFrame, val);
+             //   slog("Number 3 %i tile num %i", currentNeighbour->tileFrame, val);
                 //distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue
 
                 alt = distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue + nAlt;
-                slog("OK Number 3 %f", alt);
+              //  slog("OK Number 3 %f", alt);
 
                 if (alt < distArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)].distanceValue)
                 {
@@ -813,7 +814,7 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
                     prevItem.tileInfo = currentNeighbour;
 
                     prevArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)] = prevItem;
-                    slog("OK Number 4");
+                 //   slog("OK Number 4");
                     //remap it
                 }
               //  slog("OK Number 4");
@@ -836,49 +837,62 @@ void PathFinding(int srcX, int srcY, int destX, int destY)
             slog("double check %f %f And dist val: %f", vec.x, vec.y, finalVal);*/
 
             vec = prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].currentCoordinates;
-            slog("hello %f %f", vec.x, vec.y);
+         //   slog("hello %f %f", vec.x, vec.y);
             if (prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].prevNode != NULL) 
             {
                 vec = prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].prevNode->coordinates;
-                slog("PREVIOUS NODE WAS %f %f", vec.x, vec.y);
+             //   slog("PREVIOUS NODE WAS %f %f", vec.x, vec.y);
             }
             vec = prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].tileInfo->coordinates;
-            slog("double check %f %f", vec.x, vec.y);
+        //    slog("double check %f %f", vec.x, vec.y);
 
         }      
 
     }
 
     vec = distArray[(3 * (int)graph_manager.graphSizeX + 3)].coordinates;
-    slog("hello final %f %f", vec.x, vec.y);
+ //   slog("hello final %f %f", vec.x, vec.y);
 
 
 
-    List* currentPath;
-    slog("OK Number 5");
-    currentPath = gfc_list_new();
-    slog("OK Number 6");
+     // List* currentPath;
+   // slog("OK Number 5");
+   // currentPath = gfc_list_new();
+  //  slog("OK Number 6");
     TileInfo* curr = &dstTile;
     int currX;
     int currY;
     currX = curr->coordinates.x;
     currY = curr->coordinates.y;
+    curr = prevArray[(currY * (int)graph_manager.graphSizeX + currX)].tileInfo;
     while (prevArray[(currY * (int)graph_manager.graphSizeX + currX)].prevNode != NULL)
     {
-        slog("OK Number 7");
+     //   slog("OK Number 7");
 
-        gfc_list_append(currentPath, curr);
-        slog("OK Number 8");
+        slog("Hello from within x %i and y %i", currX, currY);
+        gfc_list_append(get_path_list(), curr);
+
+      
+        
+       // slog("OK Number 8");
         curr = prevArray[(currY * (int)graph_manager.graphSizeX + currX)].prevNode;
         currX = curr->coordinates.x;
         currY = curr->coordinates.y;
-        slog("OK Number 9");
+      //  slog("OK Number 9");
 
         //slog("OK Number 5");
 
     }
+    
+ //   currentPathFinal = currentPath;
   
+
+ 
+    //currentHello = currentPath;
+
+    return get_path_list();
 }
+
 
 
 void get_next_carpet_tile(float x, float y, Entity *ent) 

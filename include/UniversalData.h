@@ -10,7 +10,8 @@ void resetEmeraldPoolStatus();
 int GetPoolNum();
 List* get_student_list();
 void set_student_list(List* pointer);
-
+void set_path_list(List* pointer);
+List* get_path_list();
 int checkEmeraldPoolStatus();
 Entity* GetEmeraldPool(int index);
 
