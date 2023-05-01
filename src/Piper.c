@@ -29,6 +29,8 @@ static PiperData piperData = {
 	0,
 	0,
 	0,
+	0,
+	0,
 	0
 };
 

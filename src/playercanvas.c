@@ -10,6 +10,7 @@ typedef struct
 {
     Sprite* hud;
     Sprite* healthFragmentUI;
+    Sprite* currencyUI;
     Sprite* headUI;
     Sprite* lockDownUI;
     Sprite* lockDownWithUpgradeUI;
@@ -21,6 +22,7 @@ typedef struct
     int remainingStudents;
     float   maxHp;  
     float   currentHealth;  
+    int   currentCurrency;  
 }GUI;
 
 static GUI gui = { 0 };
@@ -39,6 +41,7 @@ void gui_setup_hud(PiperData* piperData, int RemainingStudents)
         1,
         0);
     gui.healthFragmentUI = gf2d_sprite_load_all("images/HealthFrag.png", 32, 32, 1, 0);
+    gui.currencyUI = gf2d_sprite_load_all("images/coin.png", 8, 8, 1, 0);
     gui.dualCastUI = gf2d_sprite_load_all("images/Sleep.png", 32, 32, 1, 0);
     gui.headUI = gf2d_sprite_load_all("images/studentFace.png", 32, 32, 1, 0);
     gui.emeraldPoolUI = gf2d_sprite_load_all("images/Emerald.png", 32, 32, 1, 0);
@@ -49,6 +52,7 @@ void gui_setup_hud(PiperData* piperData, int RemainingStudents)
     gui.speelbookMax = gf2d_sprite_load_all("images/SpellBagUpgrade.png", 32, 32, 1, 0);
     gui.maxHp = piperData->maxHealth;
     gui.currentHealth = piperData->currentHealth;
+    gui.currentCurrency = piperData->currency;
     atexit(gui_close_hud);
 }
 
@@ -86,6 +90,7 @@ void gui_draw_hud(PiperData* piperData, int RemainingStudents)
     Vector4D color = { 255,255,255,255 };
     gui.maxHp = piperData->maxHealth;
     gui.currentHealth = piperData->currentHealth;
+    gui.currentCurrency = piperData->currency;
     gf2d_sprite_draw(
         gui.hud, vector2d(100, 100),
         NULL,
@@ -112,6 +117,36 @@ void gui_draw_hud(PiperData* piperData, int RemainingStudents)
              NULL,
              0);
          startinghealthFragUI += 32;
+     }
+
+     int currencyUIStart;
+     currencyUIStart = 260;
+
+     for (i = 0; i < piperData->currency; i++) {
+         if (i == 10) { currencyUIStart = 260; }
+         if (i < 10) {
+             gf2d_sprite_draw(
+                 gui.currencyUI,
+                 vector2d(currencyUIStart, 0),
+                 NULL,
+                 NULL,
+                 NULL,
+                 NULL,
+                 NULL,
+                 0);
+         }
+         else {
+             gf2d_sprite_draw(
+                 gui.currencyUI,
+                 vector2d(currencyUIStart, 10),
+                 NULL,
+                 NULL,
+                 NULL,
+                 NULL,
+                 NULL,
+                 0);
+         }
+         currencyUIStart += 10;
      }
      
      int startingBook;

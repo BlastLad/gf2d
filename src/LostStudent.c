@@ -5,6 +5,7 @@
 #include "DynamicBody.h"
 #include "TileMap.h"
 #include "AudioManager.h"
+#include "Piper.h"
 
 
 void lost_student_think(Entity* self);
@@ -87,6 +88,10 @@ void lost_student_update(Entity* self)
 
 	if (self->currentGridPosition.y >= 11.0 && self->markedForDestruction == 0) {
 		self->markedForDestruction = 1;
+		if (GetPiperData()->currency < 21)
+		{
+			GetPiperData()->currency += 1;
+		}
 		//;ost_student_destroy(self);
 	}
 	else if (self->markedForDestruction == 1) {
@@ -95,6 +100,10 @@ void lost_student_update(Entity* self)
 	else if (self->counter > 7) {
 		if (self->currentGridPosition.y <= 1.0 && self->markedForDestruction == 0) {
 			self->markedForDestruction = 1;
+			if (GetPiperData()->currency < 21)
+			{
+				GetPiperData()->currency += 1;
+			}
 			//lost_student_destroy(self);
 		}
 	}

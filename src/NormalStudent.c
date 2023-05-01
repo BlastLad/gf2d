@@ -5,6 +5,7 @@
 #include "DynamicBody.h"
 #include "TileMap.h"
 #include "AudioManager.h"
+#include "Piper.h"
 
 void normal_student_think(Entity *self);
 
@@ -87,6 +88,19 @@ void normal_student_update(Entity* self)
 	if (self->currentGridPosition.y >= 11.0 && self->markedForDestruction == 0) {
 		//despawn or mark for despawen?
 		self->markedForDestruction = 1;
+		if (GetPiperData()->currency < 21)
+		{
+			if (GetPiperData()->oddsOnly == 0) 
+			{
+				GetPiperData()->oddsOnly = 1;
+			}
+			else 
+			{
+				GetPiperData()->oddsOnly = 0;
+				GetPiperData()->currency += 1;
+
+			}
+		}
 		//normal_student_destroy(self);
 	}
 	if (self->uniqueEntityTypeID == 4) {

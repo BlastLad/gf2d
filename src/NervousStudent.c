@@ -5,6 +5,7 @@
 #include "DynamicBody.h"
 #include "TileMap.h"
 #include "AudioManager.h"
+#include "Piper.h"
 
 
 void Nervous_student_think(Entity* self);
@@ -88,6 +89,10 @@ void Nervous_student_update(Entity* self)
 	if (self->currentGridPosition.y >= 11.0 && self->markedForDestruction == 0) {
 		//despawn or mark for despawen?
 		self->markedForDestruction = 1;
+		if (GetPiperData()->currency < 21) 
+		{
+			GetPiperData()->currency += 2;
+		}
 		//add points or smth
 		//Nervous_student_destroy(self);
 	}

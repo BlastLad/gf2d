@@ -21,6 +21,8 @@ typedef struct
 	int shadowClone;
 	int mixAbility;
 	int emeraldAbility;
+	int currency;
+	int oddsOnly;
 
 }PiperData;
 
