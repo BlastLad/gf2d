@@ -886,8 +886,6 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
     
  //   currentPathFinal = currentPath;
   
-
- 
     //currentHello = currentPath;
 
     return get_path_list();

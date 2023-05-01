@@ -61,6 +61,7 @@ int main(int argc, char* argv[])
     Sprite* sureSprite;
     //NEW
     Entity* playerEntity;//make it pointer probs for all this shit
+    Entity* turretEntity;//make it pointer probs for all this shit
     List* Students;
     List* aStarPath;
     List* AllFurnitureList;
@@ -73,6 +74,7 @@ int main(int argc, char* argv[])
 
     int mx, my, indexer;
     int qKeyDown = 0;
+    int reg1KeyDown = 0;
     int eEditorKeyDown = 0;
     int aEditorKeyDown = 0;
     int Editor1KeyDown = 0;
@@ -141,10 +143,12 @@ int main(int argc, char* argv[])
  //   gfc_list_append(AllFurnitureList, furnitureItem);
    // furnitureItem = karter_new(graph_to_world_pos(13, 2), 13, 2, 13, 11);
    // gfc_list_append(AllFurnitureList, furnitureItem);
+    aStarPath = gfc_list_new();
+    set_path_list(aStarPath);
 
     if (editorMode == 0) {
 
-
+        turretEntity = Turret_Student_New(vector2d(7, 7), 14, 7);
 
         Mix_Base_New(graph_to_world_pos(1, 2), vector2d(1, 2));
         Shadow_Clone_PickUp_New(graph_to_world_pos(1, 4), vector2d(1, 4));
@@ -158,6 +162,9 @@ int main(int argc, char* argv[])
         play_music(45);
 
     }
+    else {
+        turretEntity = NULL;
+    }
     PiperData* piperDataPointer;
     int eKeyDown = 0;
     piperDataPointer = (struct PiperData*)playerEntity->data;
@@ -167,8 +174,7 @@ int main(int argc, char* argv[])
     Students = gfc_list_new();
     set_student_list(Students);
 
-    aStarPath = gfc_list_new();
-    set_path_list(aStarPath);
+
 
     int numOfStudents = get_current_level_totalStudents();
 
@@ -447,7 +453,7 @@ int main(int argc, char* argv[])
                 if (mh >= 40.0) {
                     mh = 0;
                     if (hub == 0) {
-                        Turret_Student_New(vector2d(7, 7), 14, 7);
+                        
                         // PathFinding(7, 7, 7, 10);
 
                         hub = 1;
@@ -484,6 +490,47 @@ int main(int argc, char* argv[])
 
                 }// exit condition
 
+
+                if (!keys[SDL_SCANCODE_1])
+                {
+                    reg1KeyDown = 0;
+                }
+
+             
+
+                if (keys[SDL_SCANCODE_1] && reg1KeyDown == 0)
+                {
+                    reg1KeyDown = 1;
+                   
+                        Vector2D currentTurretPos = turretEntity->targetGridPosition;
+
+                        float xe;
+                        xe = playerEntity->position.x / 32;
+                        if (xe - ceilf(xe) < 0.5)
+                            xe = ceilf(xe);
+                        else
+                            xe = floorf(xe);
+                        int xeInt = (int)xe;
+
+
+                        float ye;
+                        ye = playerEntity->position.y / 32;
+                        if (ye - ceilf(ye) < 0.5)
+                            ye = ceilf(ye);
+                        else
+                            ye = floorf(ye);
+                        int yeInt = (int)ye;
+
+                        //TileInfo tileToCheck;
+                        //tileToCheck = get_graph_node(xeInt - 1, yeInt - 1);
+
+                        gfc_list_clear(get_path_list());
+                       // gfc_list_delete(get_path_list());
+                        turretEntity->markedForDestruction = 1;
+                        turret_student_destroy(turretEntity);
+                        turretEntity = Turret_Student_New(vector2d(currentTurretPos.x, currentTurretPos.y), xeInt - 1, yeInt - 1);                   
+                    
+                }
 
                 if (!keys[SDL_SCANCODE_E])
                 {

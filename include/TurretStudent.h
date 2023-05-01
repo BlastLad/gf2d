@@ -6,6 +6,8 @@
 
 Entity* Turret_Student_New(Vector2D position, int gridPositionX, int gridPositionY);
 
+void turret_student_destroy(Entity* self);
+
 void Turret_Student_remove_from_list(List* turret_student_list, Entity* self);
 
 #endif

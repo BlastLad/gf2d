@@ -13,7 +13,6 @@ int turret_on_collision(DynamicBody* self, List* collision);
 
 int turret_on_world_collision(DynamicBody* self, List* collision);
 
-void turret_student_destroy(Entity* self);
 
 Entity* Turret_Student_New(Vector2D position, int gridPositionX, int gridPositionY)
 {
@@ -208,7 +207,6 @@ void turret_student_think(Entity* self) {
 	vector2d_sub(dir, graph_to_world_pos(self->targetGridPosition.x, self->targetGridPosition.y),
 		graph_to_world_pos(self->currentGridPosition.x, self->currentGridPosition.y));
 
-	slog("next is x %i y %i", dir.x, dir.y);
 
 	//dir.y += 1;
 	if (stopMoving == 1) {
