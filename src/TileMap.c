@@ -564,7 +564,7 @@ int GetWeightForTileIndex(int tileFrame) {
     case 1:
         return 99;
     case 17:
-        return 17;
+        return 1;
     case 2:
     case 3:
     case 4:
@@ -574,9 +574,9 @@ int GetWeightForTileIndex(int tileFrame) {
     case 8:
     case 9:
     case 10:
-        return 1;
+        return 3;
     default:
-       return 1;
+       return 15;
     }
     return 99;
 }
@@ -596,6 +596,8 @@ typedef struct
     Vector2D coordinates;
     TileInfo* tileInfo;
     float distanceValue;
+    float histDistance;
+    float fDistanceTotal;
 }dist;
 
 typedef struct
@@ -605,6 +607,28 @@ typedef struct
     TileInfo* prevNode;
 }prev;
 
+
+int gfc_list_find_data(List* list, void* data)
+{
+    int i;
+    if (!list)
+    {
+        slog("no list provided");
+        return -1;
+    }
+    if (!data)return -1;
+    for (i = 0; i < list->count; i++)
+    {
+        if (list->elements[i].data == data)
+        {
+            // found it, now delete it
+
+            return 1;
+        }
+    }
+    //slog("data not found");
+    return 0;
+}
 
 List* PathFinding(int srcX, int srcY, int destX, int destY) 
 {
@@ -621,6 +645,7 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
     //gfc_list_foreach(graph_manager.graph, xy);
 
     List* unvistedList;
+    List* closedList;
    // List* distList;
   //  List* prevList;
 
@@ -629,10 +654,9 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
     prev* prevArray;
     prevArray = gfc_allocate_array(sizeof(prev), graph_manager.graph_max);
 
-
+    // List of nodes we have'nt checked yet also known as OPEN
     unvistedList = gfc_list_new();
-   // distList = gfc_list_new();
-   // prevList = gfc_list_new();
+    closedList = gfc_list_new();
 
     int i;
     int j;
@@ -646,19 +670,26 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
     vector2d_copy(distanceItem.coordinates, srcTile.coordinates);
     vector2d_copy(prevItem.currentCoordinates, srcTile.coordinates);
     distanceItem.distanceValue = 0;
+    distanceItem.histDistance = 0;
+    distanceItem.fDistanceTotal = 0;
     distanceItem.tileInfo = &srcTile;
     prevItem.tileInfo = &srcTile;
     prevItem.prevNode = NULL;
+   
 
     distArray[(srcY * (int)graph_manager.graphSizeX) + srcX] = distanceItem;
     prevArray[(srcY * (int)graph_manager.graphSizeX) + srcX] = prevItem;
-    
-  //  slog("graph man max %i", graph_manager.graph_max);
+    //End initial adding
+    tobeAppend = get_graph_node_pointer(srcX, srcY);
+    gfc_list_append(unvistedList, tobeAppend);
+
     int numberAdded = 1;
-    //gfc_list_append(distList, &distanceItem);
-   // gfc_list_append(prevList, &prevItem);
+
+
     int hjx;
     int hjy;
+
+    //Initialize all x, y nodes in the Distance array to have 999 distance, and Previous nodes in prev array to have NULL, since some nodes may never be reached
     for (j = 0; j < graph_manager.graphSizeY; j++)//j is row
     {
         for (i = 0; i < graph_manager.graphSizeX; i++)// i is column
@@ -667,43 +698,57 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
             hjx = tobeAppend->coordinates.x;
             hjy = tobeAppend->coordinates.y;
             
-         //   slog("OK Number 1 %i %i", hjx, hjy);
+      
 
             if (tobeAppend->coordinates.x == srcX && tobeAppend->coordinates.y == srcY) 
             {
-                
+              //Source tile so don't add it again
             }
             else 
             {
-                //initalizes the dist and pre arrays with 99 and NULL as defaults
+                //initalizes the dist and pre arrays with 999 and NULL as defaults
                 vector2d_copy(distanceItem.coordinates, tobeAppend->coordinates);
                 vector2d_copy(prevItem.currentCoordinates, tobeAppend->coordinates);
 
                 hjx = distanceItem.coordinates.x;
                 hjy = distanceItem.coordinates.y;
-               // slog("OK Number 1 post %i %i", hjx, hjy);
+               
                 distanceItem.distanceValue = 999;
+                
+                float mag;
+
+                mag = vector2d_magnitude_between(vector2d(hjx, hjy),
+                    vector2d(srcX, srcY));
+
+                //mag = mag / 32.0;//divide my 32 to make it more like grid space
+
+             //   slog("hello %f", mag);
+
+                distanceItem.histDistance = mag;
+                distanceItem.fDistanceTotal = distanceItem.histDistance + distanceItem.distanceValue;
                 prevItem.prevNode = NULL;
                 distanceItem.tileInfo = tobeAppend;
                 prevItem.tileInfo = tobeAppend;
-                // gfc_list_append(distList, &distanceItem);
-                // gfc_list_append(prevList, &prevItem);
+                
                 distArray[(j * (int)graph_manager.graphSizeX) + i] = distanceItem;
                 prevArray[(j * (int)graph_manager.graphSizeX) + i] = prevItem;
                 numberAdded += 1;
             }
 
-            gfc_list_append(unvistedList, tobeAppend);
-          //  unvisited[(j * (int)graph_manager.graphSizeX) + i] = get_graph_node(i, j);
+            //Append all x y nodes including source to unvisted list
+            //gfc_list_append(unvistedList, tobeAppend);
+         
         }
     }
 
 
 
-  //  slog("OK Number unvisted list %i", unvistedList->count);
+  
     //OK UP TO HERE
     TileInfo* u;
     TileInfo* possibleU;
+    TileInfo* lowestTotalCostToEval;
+    lowestTotalCostToEval = &srcTile;
     int possibleUX;
     int possibleUY;
     int uY;
@@ -712,52 +757,59 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
     int val;
     val = 0;
 
-  /*  if (Students->count > 0) {
-        for (indexer = Students->count - 1; indexer >= 0; indexer--) {
-            normalStudent = gfc_list_get_nth(Students, indexer);
-            if (!normalStudent)continue;
-            if (normalStudent->markedForDestruction > 0) {
-                removeStudent(Students, normalStudent);
-            }
-        }
-    } */
 
     while (unvistedList->count > 0)
     {
         u = NULL;
         val++;
         int k;
+        float currentLowest = INFINITY;
         for (k = unvistedList->count - 1; k >= 0; k--) 
         {
-            //k is possible u
             possibleU = gfc_list_get_nth(unvistedList, k);
-
 
             possibleUX = possibleU->coordinates.x;
             possibleUY = possibleU->coordinates.y;
-         //   slog("OK Number 2: k val: %i | %i coords %i %i", k, val, possibleUX, possibleUY);
+
+            if (distArray[(possibleUY * (int)graph_manager.graphSizeX) +
+                possibleUX].fDistanceTotal < currentLowest) 
+            {
+                lowestTotalCostToEval = possibleU;
+            }
+        }
+
+        //For each x y node in the unvistedList
+        //for (k = unvistedList->count - 1; k >= 0; k--) 
+       // {
+            //k is possible u
+            //possibleU = gfc_list_get_nth(unvistedList, k);
+
+
+            possibleUX = lowestTotalCostToEval->coordinates.x;
+            possibleUY =lowestTotalCostToEval->coordinates.y;
+         
 
 
             if (u == NULL)
             {
 
-                u = gfc_list_get_nth(unvistedList, k);
+                u = lowestTotalCostToEval;
                 uY = u->coordinates.y;
                 uX = u->coordinates.x;
 
 
             }
             else if (distArray[(possibleUY * (int)graph_manager.graphSizeX) +
-                possibleUX].distanceValue <
-                distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue) 
+                possibleUX].fDistanceTotal <
+                distArray[(uY * (int)graph_manager.graphSizeX) + uX].fDistanceTotal) 
             {
-            //    slog("OK Number 2.5");
+            
 
-                u = gfc_list_get_nth(unvistedList, k);
+                u = lowestTotalCostToEval;
                 uY = u->coordinates.y;
                 uX = u->coordinates.x;
             }
-        }
+        //}
 
         if (uX == dstTile.coordinates.x && uY == dstTile.coordinates.y) 
         {
@@ -767,6 +819,7 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
         }
 
         gfc_list_delete_data(unvistedList, u);
+        gfc_list_append(closedList, u);
 
         int nodeNeighbourIndex;
         for (nodeNeighbourIndex = 0; nodeNeighbourIndex < 4; nodeNeighbourIndex++) 
@@ -777,47 +830,45 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
             int currentNeighbourX;
             int currentNeighbourY;
 
-      
 
-
-           /* for (i = 0; i < 4; i++) {
-                if (get_graph_node(x, y).neighbours[i] != NULL) {
-                    TileInfo* currentNeighbour;
-                    currentNeighbour = get_graph_node(x, y).neighbours[i];
-                    gf2d_draw_circle(graph_to_world_pos(currentNeighbour->coordinates.x, currentNeighbour->coordinates.y), 5, gfc_color(255, 0, 0, 255));
-                }
-            }*/
-          //  slog("Number X Coords %i %i", uX, uY);
+         
             if (u->neighbours[nodeNeighbourIndex] != NULL)
             {
                 currentNeighbour = u->neighbours[nodeNeighbourIndex];
                 currentNeighbourX = currentNeighbour->coordinates.x;
                 currentNeighbourY = currentNeighbour->coordinates.y;
                 nAlt = GetWeightForTileIndex(currentNeighbour->tileFrame);
-             //   slog("Number 3 %i tile num %i", currentNeighbour->tileFrame, val);
-                //distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue
-
-                alt = distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue + nAlt;
-              //  slog("OK Number 3 %f", alt);
-
-                if (alt < distArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)].distanceValue)
+           
+                if (nAlt < 90 && gfc_list_find_data(closedList, currentNeighbour) != 1) 
                 {
 
-                    distanceItem.distanceValue = alt;
-                    distanceItem.tileInfo = currentNeighbour;
-                    vector2d_copy(distanceItem.coordinates, currentNeighbour->coordinates);
-                    //coords
+                    alt = distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue + nAlt;
 
-                    distArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)] = distanceItem;
-                    prevItem.prevNode = u;
-                    vector2d_copy(prevItem.currentCoordinates, currentNeighbour->coordinates);
-                    prevItem.tileInfo = currentNeighbour;
 
-                    prevArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)] = prevItem;
-                 //   slog("OK Number 4");
-                    //remap it
+                    if (alt < distArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)].distanceValue || gfc_list_find_data(unvistedList, currentNeighbour) <= 0)
+                    {
+
+                        distanceItem.distanceValue = alt;
+                        distanceItem.fDistanceTotal = distanceItem.distanceValue + distanceItem.histDistance;
+                        distanceItem.tileInfo = currentNeighbour;
+                        vector2d_copy(distanceItem.coordinates, currentNeighbour->coordinates);
+                        //coords
+
+                        distArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)] = distanceItem;
+                        prevItem.prevNode = u;
+                        vector2d_copy(prevItem.currentCoordinates, currentNeighbour->coordinates);
+                        prevItem.tileInfo = currentNeighbour;
+
+                        prevArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)] = prevItem;
+
+                        if (gfc_list_find_data(unvistedList, currentNeighbour) <= 0)
+                        {
+                            gfc_list_append(unvistedList, currentNeighbour);
+                        }
+
+                        //remap it
+                    }
                 }
-              //  slog("OK Number 4");
             }
         }
     } 
@@ -830,35 +881,22 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
     {       
         for (debugI = 0; debugI < graph_manager.graphSizeX; debugI++)
         {
-            /*vec = distArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].coordinates;
-            finalVal = distArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].distanceValue;
-            slog("hello %f %f And dist val: %f", vec.x, vec.y, finalVal);
-            vec = distArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].tileInfo->coordinates;
-            slog("double check %f %f And dist val: %f", vec.x, vec.y, finalVal);*/
 
             vec = prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].currentCoordinates;
-         //   slog("hello %f %f", vec.x, vec.y);
             if (prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].prevNode != NULL) 
             {
                 vec = prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].prevNode->coordinates;
              //   slog("PREVIOUS NODE WAS %f %f", vec.x, vec.y);
             }
             vec = prevArray[(debugJ * (int)graph_manager.graphSizeX + debugI)].tileInfo->coordinates;
-        //    slog("double check %f %f", vec.x, vec.y);
 
         }      
 
     }
 
     vec = distArray[(3 * (int)graph_manager.graphSizeX + 3)].coordinates;
- //   slog("hello final %f %f", vec.x, vec.y);
 
 
-
-     // List* currentPath;
-   // slog("OK Number 5");
-   // currentPath = gfc_list_new();
-  //  slog("OK Number 6");
     TileInfo* curr = &dstTile;
     int currX;
     int currY;
@@ -874,19 +912,13 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
 
       
         
-       // slog("OK Number 8");
         curr = prevArray[(currY * (int)graph_manager.graphSizeX + currX)].prevNode;
         currX = curr->coordinates.x;
         currY = curr->coordinates.y;
-      //  slog("OK Number 9");
 
-        //slog("OK Number 5");
 
     }
     
- //   currentPathFinal = currentPath;
-  
-    //currentHello = currentPath;
 
     return get_path_list();
 }

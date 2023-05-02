@@ -179,6 +179,7 @@ void normal_student_think(Entity* self) {
 		graph_to_world_pos(self->currentGridPosition.x, self->currentGridPosition.y));
 
 
+
 	if (vector2d_distance_between_less_than((graph_to_world_pos(self->targetGridPosition.x, self->targetGridPosition.y)), //1,1
 		self->position, 2.0))  //1, 2
 	{
