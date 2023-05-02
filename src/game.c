@@ -28,6 +28,7 @@ static int currentEnemyTileFrame = 0;
 static int totalTileFrames = 0;
 static int totalEnemyFrames = 0;
 
+
 void SpawnHazard();
 void removeStudent();
 void initer(const char* filename, List* AllFurn);
@@ -55,8 +56,10 @@ int main(int argc, char* argv[])
     Sprite* sprite;
     Sprite* editorSprite;
     Sprite* mouseSprite;
+    Sprite* hellFireSprite;
     Sprite* enemyEditorSprite;
     Sprite* toolSprite;
+    Sprite* markedSprite;
     Sprite* titleSprite;
     Sprite* sureSprite;
     //NEW
@@ -119,6 +122,8 @@ int main(int argc, char* argv[])
 
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     editorSprite = gf2d_sprite_load_image("images/editorframe.png");
+    markedSprite = gf2d_sprite_load_image("images/Marked.png");
+    hellFireSprite = gf2d_sprite_load_image("images/hellfire.png");
     toolSprite = gf2d_sprite_load_image("images/tool.png");   
     mouseSprite = gf2d_sprite_load_all("images/pointer.png", 32, 32, 16, 0);
     enemyEditorSprite = gf2d_sprite_load_all("images/enemyEdit.png", 32, 32, 3, 0);
@@ -186,6 +191,15 @@ int main(int argc, char* argv[])
     
     int hub;
     hub = 0;
+
+
+    int hellfire1down = 0;
+    int hellfire2down = 0;
+    int hellfire3down = 0;
+    int hellfire4down = 0;
+    int hellfire5down = 0;
+    int hellfireShowDown = 0;
+    int hellfireShow = 0;
     /*main game loop*/
     while (!done)
     {
@@ -204,7 +218,8 @@ int main(int argc, char* argv[])
         //backgrounds drawn first
             gf2d_sprite_draw_image(titleSprite, vector2d(0, 0));
 
-            gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
+
+
 
             music_update();
 
@@ -214,6 +229,130 @@ int main(int argc, char* argv[])
                 areYouSure = 0;
             }
             if (keys[SDL_SCANCODE_BACKSPACE])done = 1; // exit condition
+
+            if (!keys[SDL_SCANCODE_6]) {
+                hellfireShowDown = 0;                
+            }
+
+
+            if (keys[SDL_SCANCODE_6] && hellfireShowDown == 0) {
+                hellfireShowDown = 1;
+                if (hellfireShow == 1) {
+                    hellfireShow = 0;
+                }
+                else
+                {
+                    hellfireShow = 1;
+                }
+            }
+
+           
+
+            if (!keys[SDL_SCANCODE_1]) {
+                hellfire1down = 0;
+            }
+
+            if (keys[SDL_SCANCODE_1] && hellfire1down == 0) {
+                hellfire1down = 1;
+                if (GetHellFireData()->noRunning == 0) {
+                    GetHellFireData()->noRunning = 1;
+                    playerEntity->speed = 0.5;
+                }
+                else
+                {
+                    GetHellFireData()->noRunning = 0;
+                    playerEntity->speed = 2;
+                }
+
+            }
+
+            if (!keys[SDL_SCANCODE_2]) {
+                hellfire2down = 0;
+            }
+
+            if (keys[SDL_SCANCODE_2] && hellfire2down == 0) {
+                hellfire2down = 1;
+
+                if (GetHellFireData()->studentDebt == 0) {
+                    GetHellFireData()->studentDebt = 1;
+                }
+                else
+                {
+                    GetHellFireData()->studentDebt = 0;
+                }
+
+            }
+
+            if (!keys[SDL_SCANCODE_3]) {
+                hellfire3down = 0;
+            }
+
+            if (keys[SDL_SCANCODE_3] && hellfire3down == 0) {
+                hellfire3down = 1;
+
+                if (GetHellFireData()->rushHour == 0) {
+                    GetHellFireData()->rushHour = 1;
+                }
+                else
+                {
+                    GetHellFireData()->rushHour = 0;
+                }
+
+            }
+
+            if (!keys[SDL_SCANCODE_4]) {
+                hellfire4down = 0;
+            }
+
+            if (keys[SDL_SCANCODE_4] && hellfire4down == 0) {
+                hellfire4down = 1;
+
+                if (GetHellFireData()->manaDrained== 0) {
+                    GetHellFireData()->manaDrained = 1;
+                }
+                else
+                {
+                    GetHellFireData()->manaDrained = 0;
+                }
+
+            }
+
+            if (!keys[SDL_SCANCODE_5]) {
+                hellfire5down = 0;
+            }
+
+            if (keys[SDL_SCANCODE_5] && hellfire5down == 0) {
+                hellfire5down = 1;
+
+                if (GetHellFireData()->ultimaBan == 0) {
+                    GetHellFireData()->ultimaBan = 1;
+                }
+                else
+                {
+                    GetHellFireData()->ultimaBan = 0;
+                }
+
+            }
+
+
+            if (hellfireShow == 1) {
+                gf2d_sprite_draw_image(hellFireSprite, vector2d(200, 0));
+
+
+                if (GetHellFireData()->noRunning == 1)
+                    gf2d_sprite_draw_image(markedSprite, vector2d(280, 48));
+                if (GetHellFireData()->studentDebt == 1)
+                    gf2d_sprite_draw_image(markedSprite, vector2d(280, 136));
+                if (GetHellFireData()->rushHour == 1)
+                    gf2d_sprite_draw_image(markedSprite, vector2d(280, 214));
+                if (GetHellFireData()->manaDrained == 1)
+                    gf2d_sprite_draw_image(markedSprite, vector2d(280, 302));
+                if (GetHellFireData()->ultimaBan == 1)
+                    gf2d_sprite_draw_image(markedSprite, vector2d(280, 366));
+            }
+            gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
+
+
         }
         else
         {           
@@ -476,6 +615,12 @@ int main(int argc, char* argv[])
                                 gfc_list_append(powerUpList, Max_Spellbook_New(graph_to_world_pos(16, 4), vector2d(16, 4)));
 
                             GetPiperData()->powerUpCollected = 0;
+                            if (GetHellFireData()->studentDebt == 1) {
+                                GetPiperData()->currency -= 3;
+                                if (GetPiperData()->currency < 0) {
+                                    GetPiperData()->currency = 0;
+                                }
+                            }
                             //if (GetPiperData()->powerUpCollected == 1)
                             //{
                                 numOfStudents = get_current_level_totalStudents();
@@ -518,7 +663,7 @@ int main(int argc, char* argv[])
                 }
 
                 int useSpell = 0;
-                if (keys[SDL_SCANCODE_TAB] && piperDataPointer->currentSpellBooks > 0)
+                if (keys[SDL_SCANCODE_TAB] && piperDataPointer->currentSpellBooks > 0 && GetHellFireData()->ultimaBan == 0)
                 {
                     piperDataPointer->currentSpellBooks -= 1;
                     useSpell = 1;

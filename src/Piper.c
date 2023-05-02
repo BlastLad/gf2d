@@ -79,7 +79,13 @@ Entity* piper_entity_new(Vector2D spawnPosition)
 	ent->body.worldtouch = piper_on_static_collision;
 
 	vector2d_copy(ent->position, spawnPosition);
+
 	ent->speed = 2;
+
+
+	if (GetHellFireData()->noRunning == 1)
+		ent->speed = 0.5;
+
 	ent->markedForDestruction = 0;
 	ent->data = (void*)&piperData;
 	ent->counter = 0;
@@ -125,7 +131,11 @@ void piper_update(Entity* self)
 	{
 		self->counter += 1;
 
-		if (self->counter > 900) 
+		int targetNumber = 900;
+		if (GetHellFireData()->manaDrained == 1)
+			targetNumber = 1500;
+
+		if (self->counter > targetNumber) 
 		{
 			self->counter = 0;
 			shadowSpawned = 0;

@@ -4,6 +4,16 @@
 #include "gfc_list.h";
 #include "Entity.h"
 
+
+typedef struct
+{
+	int noRunning;
+	int studentDebt;
+	int rushHour;
+	int manaDrained;
+	int ultimaBan;
+}HellFireData;
+
 List* getCarpetTileList();
 void setCarpetTileList(List* carpetPointer);
 void resetEmeraldPoolStatus();
@@ -17,6 +27,8 @@ List* set_powerup_list(List* pointer);
 int checkEmeraldPoolStatus();
 Entity* GetEmeraldPool(int index);
 int OnPowerUpCollect(int value);
+
+HellFireData* GetHellFireData();
 
 void SetEmeraldPool(Entity* pool);
 

@@ -51,6 +51,9 @@ Entity* distracted_student_new(Vector2D position, int gridPositionX, int gridPos
 	ent->drawOffset = vector2d(8, 8);
 	ent->speed = .5;
 
+	if (GetHellFireData()->rushHour == 1)
+		ent->speed = 1;
+
 	//collion stuff
 	ent->shape = gfc_shape_circle(0, 0, 5);
 	ent->body.shape = &ent->shape;
@@ -87,12 +90,18 @@ void distracted_student_update(Entity* self)
 
 	if (self->timer > 25.0) 
 	{
-		if (self->speed == 0.5)
-			self->speed = 1;
-		else if (self->speed == 1)
+		if (self->speed == 0.5) {
+			if (GetHellFireData()->rushHour == 1)
+				self->speed = 1.2;
+		}
+		else if (self->speed == 1) {
 			self->speed = 0;
-		else
+		}
+		else {
 			self->speed = 0.5;
+			if (GetHellFireData()->rushHour == 1)
+				self->speed = 1;
+		}
 
 
 		self->timer = 0;
@@ -113,7 +122,11 @@ void distracted_student_update(Entity* self)
 
 		self->counter += 1;
 
-		if (self->counter > 500) {
+		int target = 500;
+		if (GetHellFireData()->rushHour == 1)
+			target = 300;
+
+		if (self->counter > target) {
 			self->counter = 0;
 			self->uniqueEntityTypeID = 3;
 		}

@@ -14,6 +14,21 @@ static int currentPools;
 List* carpetTileList;
 List* powerUpList;
 
+
+
+
+static HellFireData hellFireData = {
+	0,
+	0,
+	0,
+	0,
+	0
+};
+
+HellFireData* GetHellFireData() {
+	return &hellFireData;
+}
+
 List* get_powerup_list() {
 	return powerUpList;
 }

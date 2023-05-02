@@ -5,6 +5,7 @@
 #include "DynamicBody.h"
 #include "TileMap.h"
 #include "AudioManager.h"
+#include "Piper.h"
 
 
 void turning_student_think(Entity* self);
@@ -33,6 +34,11 @@ Entity* turning_student_new(Vector2D position, int gridPositionX, int gridPositi
 	ent->update = turning_student_update;
 	ent->drawOffset = vector2d(8, 8);
 	ent->speed = .5;
+
+
+	if (GetHellFireData()->rushHour == 1)
+		ent->speed = 1;
+
 
 	//collion stuff
 	ent->shape = gfc_shape_circle(0, 0, 5);
@@ -70,6 +76,20 @@ void turning_student_update(Entity* self)
 	if (self->currentGridPosition.y >= 11.0 && self->markedForDestruction == 0) {
 		//despawn or mark for despawen?
 		self->markedForDestruction = 1;
+		if (GetPiperData()->currency < 21)
+		{
+			if (GetPiperData()->oddsOnly == 0)
+			{
+				GetPiperData()->oddsOnly = 1;
+			}
+			else
+			{
+				GetPiperData()->oddsOnly = 0;
+				GetPiperData()->currency += 1;
+
+			}
+		}
+
 	//	normal_student_destroy(self);
 	}
 	else if (self->markedForDestruction == 1) {
@@ -80,7 +100,11 @@ void turning_student_update(Entity* self)
 
 		self->timer += 0.1;
 
-		if (self->timer > 50.0) {
+		float target = 50.0;
+		if (GetHellFireData()->rushHour == 1)
+			target = 30.0;
+
+		if (self->timer > target) {
 			self->timer = 0;
 			self->uniqueEntityTypeID = 3;
 		}

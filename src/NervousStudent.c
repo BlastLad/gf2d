@@ -42,6 +42,9 @@ Entity* nervous_student_new(Vector2D position, int gridPositionX, int gridPositi
 	ent->drawOffset = vector2d(8, 8);
 	ent->speed = .5;
 
+	if (GetHellFireData()->rushHour == 1)
+		ent->speed = 1;
+
 	//collion stuff
 	ent->shape = gfc_shape_circle(0, 0, 5);
 	ent->body.shape = &ent->shape;
@@ -101,7 +104,11 @@ void Nervous_student_update(Entity* self)
 
 		self->timer += 0.1;
 
-		if (self->timer > 50.0) {
+		float target = 50.0;
+		if (GetHellFireData()->rushHour == 1)
+			target = 30.0;
+
+		if (self->timer > target) {
 			self->timer = 0;
 			self->uniqueEntityTypeID = 3;
 		}
