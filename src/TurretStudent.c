@@ -3,7 +3,7 @@
 #include "TileMap.h"
 #include "DynamicBody.h"
 #include "UniversalData.h"
-
+#include "SleepSpell.h"
 
 void turret_student_think(Entity* self);
 
@@ -14,7 +14,7 @@ int turret_on_collision(DynamicBody* self, List* collision);
 int turret_on_world_collision(DynamicBody* self, List* collision);
 
 
-Entity* Turret_Student_New(Vector2D position, int gridPositionX, int gridPositionY)
+Entity* Turret_Student_New(Vector2D position, int gridPositionX, int gridPositionY, Entity* playerEnt)
 {
 	//slog("before x %f before y %f", gridPosition.x, gridPosition.y);	
 	Entity* ent;
@@ -55,10 +55,10 @@ Entity* Turret_Student_New(Vector2D position, int gridPositionX, int gridPositio
 
 	ent->body.touch = turret_on_collision;
 	ent->body.worldtouch = turret_on_world_collision;
+	
+	PathFinding(position.x, position.y, gridPositionX, gridPositionY);
 
-	ent->data = PathFinding(position.x, position.y, gridPositionX, gridPositionY);;
-
-
+	ent->data = playerEnt;
 
 
 	if (get_path_list()->count > 0) {
@@ -101,6 +101,12 @@ Entity* Turret_Student_New(Vector2D position, int gridPositionX, int gridPositio
 	return ent;
 }
 
+
+void setDataForTurret() 
+{
+
+}
+
 int turret_on_collision(DynamicBody* self, List* collision) {
 
 }
@@ -109,9 +115,22 @@ int turret_on_world_collision(DynamicBody* self, List* collision) {
 
 }
 
+void SleepSpellCastTurret(Vector2D direction, Entity* ent)
+{
+	if (direction.x == 0 && direction.y == 0)
+		direction.y += 1;
+
+
+	sleep_spell_new(ent->position, ent, direction);
+}
+
+
 void turret_student_update(Entity* self)
 {
 	//slog("Marked");
+
+	Entity* playerPos;
+	playerPos = (struct Entity*)self->data;
 
 
 
@@ -121,32 +140,33 @@ void turret_student_update(Entity* self)
 	//else {
 	//	self->speed = 0.0f;
 	//}
-
-
-	if (self->currentGridPosition.y >= 11.0 && self->markedForDestruction == 0) {
-		//despawn or mark for despawen?
-		self->markedForDestruction = 1;
-		//add points or smth
-		//Nervous_student_destroy(self);
-	}
-
-	if (self->uniqueEntityTypeID == 17) 
+	if (self->uniqueEntityTypeID == 17)
 	{
 
 		self->timer += 0.1;
 
-		if (self->timer > 10.0) {
-			TileInfo* nextTile;
+		if (self->timer > 40.0)
+		{
+			Vector2D dir;
+			vector2d_sub(dir, vector2d(playerPos->position.x, playerPos->position.y),
+				graph_to_world_pos(self->currentGridPosition.x, self->currentGridPosition.y));
+		
 
-			
+			vector2d_normalize(&dir);
+			SleepSpellCastTurret(dir, self);
 
-			
+
+
+
+			//SleepSpellCast( , self);
+
 			self->timer = 0;
-			self->uniqueEntityTypeID = 3;
 		}
 
 		//normal_student_destroy(self);
 	}
+
+	
 }
 
 void turret_student_think(Entity* self) {
@@ -218,11 +238,11 @@ void turret_student_think(Entity* self) {
 	vector2d_copy(self->body.velocity, dir);
 	vector2d_copy(self->velocity, dir);
 
-	vector2d_copy(self->position, self->body.position);
+	vector2d_copy(self->position, self->body.position);	
+
+	
 
 	//vector2d_copy(pos, dir);*/
-
-
 }
 
 void turret_student_destroy(Entity* self) {

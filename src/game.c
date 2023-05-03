@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
     totalEnemyFrames = 4;
     level_set_active_level(tileMap);
     set_current_level_num(1);
-    set_current_level_totalStudents(2);
+    set_current_level_totalStudents(20);
     set_current_level_remainingStudents(get_current_level_totalStudents());
 
 
@@ -131,12 +131,14 @@ int main(int argc, char* argv[])
     sureSprite = gf2d_sprite_load_image("images/areyousure.png");
 
     AllFurnitureList = gfc_list_new();
+    setFurnitureList(AllFurnitureList);
 
 
     playerEntity = piper_entity_new(graph_to_world_pos(9, 9));
     
 
     initer("config/testSave.tilemap", AllFurnitureList);
+
    // furnitureItem = SpawnEnemy(2, 7, 9, 0, 0);
    // gfc_list_append(AllFurnitureList, furnitureItem);
   //  furnitureItem = SpawnEnemy(2, 12, 9, 0, 0);
@@ -157,7 +159,7 @@ int main(int argc, char* argv[])
 
     if (editorMode == 0) {
 
-        turretEntity = Turret_Student_New(vector2d(7, 7), 14, 7);
+        turretEntity = Turret_Student_New(vector2d(8, 8), 8, 7, playerEntity);
 
       // Mix_Base_New(graph_to_world_pos(1, 2), vector2d(1, 2));
         //Shadow_Clone_PickUp_New(graph_to_world_pos(1, 4), vector2d(1, 4));
@@ -708,7 +710,7 @@ int main(int argc, char* argv[])
                        // gfc_list_delete(get_path_list());
                         turretEntity->markedForDestruction = 1;
                         turret_student_destroy(turretEntity);
-                        turretEntity = Turret_Student_New(vector2d(currentTurretPos.x, currentTurretPos.y), xeInt - 1, yeInt - 1);                   
+                        turretEntity = Turret_Student_New(vector2d(currentTurretPos.x, currentTurretPos.y), xeInt - 1, yeInt - 1, playerEntity);                   
                     
                 }
 

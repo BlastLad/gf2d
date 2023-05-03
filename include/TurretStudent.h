@@ -4,7 +4,7 @@
 #include "gfc_vector.h"
 #include "Entity.h"
 
-Entity* Turret_Student_New(Vector2D position, int gridPositionX, int gridPositionY);
+Entity* Turret_Student_New(Vector2D position, int gridPositionX, int gridPositionY, Entity* playerEnt);
 
 void turret_student_destroy(Entity* self);
 

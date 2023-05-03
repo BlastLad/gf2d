@@ -15,6 +15,8 @@ typedef struct
 }HellFireData;
 
 List* getCarpetTileList();
+List* getFurnitureList();
+void setFurnitureList(List* carpetPointer);
 void setCarpetTileList(List* carpetPointer);
 void resetEmeraldPoolStatus();
 int GetPoolNum();

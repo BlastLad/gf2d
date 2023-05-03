@@ -8,6 +8,7 @@ static int totalStudents;
 
 List* pointerToStudentList;
 List* pointerToPathList;
+List* AllFurnitureList;
 
 Entity* emeraldPool1;
 static int currentPools;
@@ -27,6 +28,15 @@ static HellFireData hellFireData = {
 
 HellFireData* GetHellFireData() {
 	return &hellFireData;
+}
+
+List* getFurnitureList() {
+	return &AllFurnitureList;
+}
+
+void setFurnitureList(List* carpetPointer) 
+{
+	AllFurnitureList = carpetPointer;
 }
 
 List* get_powerup_list() {
