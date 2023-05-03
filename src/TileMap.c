@@ -596,7 +596,7 @@ typedef struct
     Vector2D coordinates;
     TileInfo* tileInfo;
     float distanceValue;
-    float histDistance;
+    int histDistance;
     float fDistanceTotal;
 }dist;
 
@@ -630,24 +630,24 @@ int gfc_list_find_data(List* list, void* data)
     return 0;
 }
 
+int vector2d_magnitude_between_manhattan(Vector2D a, Vector2D b) 
+{
+    int hx = abs(a.x - b.x);
+    int hy = abs(a.y - a.y);
+    return hx + hy;
+}
+
 List* PathFinding(int srcX, int srcY, int destX, int destY) 
 {
     TileInfo srcTile; 
     srcTile = get_graph_node(srcX, srcY);
     TileInfo dstTile; 
     dstTile = get_graph_node(destX, destY);
-  //  TileInfo* unvisited;
 
-  //  unvisited = gfc_allocate_array(sizeof(TileInfo), graph_manager.graph_max);
-
-
-    //gfc_list_foreach_context(graph_manager.graph, xy, )
-    //gfc_list_foreach(graph_manager.graph, xy);
 
     List* unvistedList;
     List* closedList;
-   // List* distList;
-  //  List* prevList;
+
 
     dist* distArray;
     distArray = gfc_allocate_array(sizeof(dist), graph_manager.graph_max);
@@ -715,9 +715,9 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
                
                 distanceItem.distanceValue = 999;
                 
-                float mag;
+                int mag;
 
-                mag = vector2d_magnitude_between(vector2d(hjx, hjy),
+                mag = vector2d_magnitude_between_manhattan(vector2d(hjx, hjy),
                     vector2d(srcX, srcY));
 
                 //mag = mag / 32.0;//divide my 32 to make it more like grid space
@@ -778,42 +778,20 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
             }
         }
 
-        //For each x y node in the unvistedList
-        //for (k = unvistedList->count - 1; k >= 0; k--) 
-       // {
-            //k is possible u
-            //possibleU = gfc_list_get_nth(unvistedList, k);
+        possibleUX = lowestTotalCostToEval->coordinates.x;
+        possibleUY =lowestTotalCostToEval->coordinates.y;
 
-
-            possibleUX = lowestTotalCostToEval->coordinates.x;
-            possibleUY =lowestTotalCostToEval->coordinates.y;
-         
-
-
-            if (u == NULL)
-            {
-
-                u = lowestTotalCostToEval;
-                uY = u->coordinates.y;
-                uX = u->coordinates.x;
-
-
-            }
-            else if (distArray[(possibleUY * (int)graph_manager.graphSizeX) +
-                possibleUX].fDistanceTotal <
-                distArray[(uY * (int)graph_manager.graphSizeX) + uX].fDistanceTotal) 
-            {
-            
-
-                u = lowestTotalCostToEval;
-                uY = u->coordinates.y;
-                uX = u->coordinates.x;
-            }
-        //}
+        if (u == NULL)
+        {
+            u = lowestTotalCostToEval;
+            uY = u->coordinates.y;
+            uX = u->coordinates.x;
+        }
+        
 
         if (uX == dstTile.coordinates.x && uY == dstTile.coordinates.y) 
         {
-            slog("once more");
+            slog("Complete");
             slog("BREAKING OUT %i %i", uX, uY);
             break;
         }
@@ -829,23 +807,25 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
             TileInfo* currentNeighbour;
             int currentNeighbourX;
             int currentNeighbourY;
-
-
          
             if (u->neighbours[nodeNeighbourIndex] != NULL)
             {
                 currentNeighbour = u->neighbours[nodeNeighbourIndex];
                 currentNeighbourX = currentNeighbour->coordinates.x;
                 currentNeighbourY = currentNeighbour->coordinates.y;
+                //nAlt is the (G) value before adding it to the chains total (G) values
                 nAlt = GetWeightForTileIndex(currentNeighbour->tileFrame);
            
+                //90 is a hard coded value that is smaller than the nAlt for non-traversable tiles
                 if (nAlt < 90 && gfc_list_find_data(closedList, currentNeighbour) != 1) 
                 {
 
                     alt = distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue + nAlt;
+                    float older;
+                    older = distArray[(uY * (int)graph_manager.graphSizeX) + uX].distanceValue;
 
-
-                    if (alt < distArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)].distanceValue || gfc_list_find_data(unvistedList, currentNeighbour) <= 0)
+                    if (alt < distArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)].distanceValue 
+                        || gfc_list_find_data(unvistedList, currentNeighbour) <= 0)
                     {
 
                         distanceItem.distanceValue = alt;
@@ -861,10 +841,9 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
 
                         prevArray[(currentNeighbourY * (int)graph_manager.graphSizeX + currentNeighbourX)] = prevItem;
 
-                        if (gfc_list_find_data(unvistedList, currentNeighbour) <= 0)
-                        {
-                            gfc_list_append(unvistedList, currentNeighbour);
-                        }
+                        
+                        gfc_list_append(unvistedList, currentNeighbour);
+                       
 
                         //remap it
                     }
@@ -905,21 +884,13 @@ List* PathFinding(int srcX, int srcY, int destX, int destY)
     curr = prevArray[(currY * (int)graph_manager.graphSizeX + currX)].tileInfo;
     while (prevArray[(currY * (int)graph_manager.graphSizeX + currX)].prevNode != NULL)
     {
-     //   slog("OK Number 7");
-
-        slog("Hello from within x %i and y %i", currX, currY);
         gfc_list_append(get_path_list(), curr);
-
-      
-        
+              
         curr = prevArray[(currY * (int)graph_manager.graphSizeX + currX)].prevNode;
         currX = curr->coordinates.x;
         currY = curr->coordinates.y;
-
-
     }
     
-
     return get_path_list();
 }
 
